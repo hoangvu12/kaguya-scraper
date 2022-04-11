@@ -14,6 +14,31 @@ npm install
 ```
 
 
+## Enviroment Variables
+Change ```.env-example``` to ```.env```
+
+```
+# See https://github.com/hoangvu12/kaguya-database
+SUPABASE_KEY=
+SUPABASE_URL=
+
+# Push notification (npm run webPush:generate)
+WEB_PUSH_PUBLIC_KEY=
+WEB_PUSH_PRIVATE_KEY=
+WEB_PUSH_EMAIL=
+
+# This will be your base route (https://example.com/BASE_ROUTE)
+BASE_ROUTE=
+
+# Discord
+# Discord new anime/manga update channel id
+DISCORD_UPDATE_CHANNEL_ID=
+DISCORD_GUILD_ID=
+DISCORD_CLIENT_ID=
+DISCORD_TOKEN=
+
+```
+
 ## How it works?
 *kaguya-scraper* is built to handle multiple anime/manga ```scrapers``` (Or we can call it ```sources```).
 
@@ -35,3 +60,20 @@ Everytime you create a new source, you have to initialize that source.
 Run ```npm run cli scraper:init``` to initialize source.
 
 #### Note: Because initialize source will scrape all the anime, it will mostly takes very long time to run. (based on how many anime/manga the source have, 2-3 hours for ~3k anime/manga).
+
+
+## Discord bot
+
+### Initialize
+*Only needed to run once*
+
+Run ```npm run commands``` and ```npm run permissions``` to deploy commands and permissions to Discord
+
+### Available commands
+
+- `scrape` - scrape data,
+
+## License
+
+Licensed under the MIT. See the [LICENSE](https://github.com/hoangvu12/kaguya-scraper/blob/main/LICENSE) file for details.
+
