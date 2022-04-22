@@ -6,22 +6,15 @@ import { Media, MediaType } from '../types/anilist';
 import axiosRateLimit from 'axios-rate-limit';
 import { findBestMatch, sleep } from '.';
 
-axiosRetry(axios, { retries: 3 });
-
-const client = axiosRateLimit(axios, {
-  maxRequests: 50,
-  perMilliseconds: 60000,
-});
-
-client.interceptors.request.use(async (config) => {
-  await sleep(250);
-
-  return config;
-});
-
 const query = `
-query ($id: Int, $search: String, $type: MediaType, $sort: [MediaSort]) {
-  Media(id: $id, search: $search, type: $type, sort: $sort) {
+query ($id: Int, $search: String, $type: MediaType) {
+  Media(
+    id: $id
+    search: $search
+    type: $type
+    sort: SEARCH_MATCH
+    status_not: NOT_YET_RELEASED
+  ) {
     trailer {
       id
       site
@@ -66,10 +59,10 @@ query ($id: Int, $search: String, $type: MediaType, $sort: [MediaSort]) {
         id
         isMain
         node {
-            id
-            name
-            isAnimationStudio
-            favourites
+          id
+          name
+          isAnimationStudio
+          favourites
         }
       }
     }
@@ -120,7 +113,7 @@ query ($id: Int, $search: String, $type: MediaType, $sort: [MediaSort]) {
             full
             native
             userPreferred
-          }  
+          }
           image {
             large
             medium
@@ -166,8 +159,21 @@ query ($id: Int, $search: String, $type: MediaType, $sort: [MediaSort]) {
       name
     }
   }
-}  
+}
 `;
+
+axiosRetry(axios, { retries: 3 });
+
+const client = axiosRateLimit(axios, {
+  maxRequests: 50,
+  perMilliseconds: 60000,
+});
+
+client.interceptors.request.use(async (config) => {
+  await sleep(250);
+
+  return config;
+});
 
 const composeMangaData = (media: Media): AnilistManga => {
   if (!media) return null;
