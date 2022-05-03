@@ -72,12 +72,10 @@
     "lodash": "^4.17.21",
     "node-match-path": "^0.6.3",
     "socket.io": "^4.4.1",
-    "tough-cookie": "^4.0.0",
     "tslib": "~2.3.1",
     "web-push": "^3.4.5",
     "winston": "^3.6.0",
-    "winston-daily-rotate-file": "^4.6.1",
-    "ytdl-core": "^4.10.1"
+    "winston-daily-rotate-file": "^4.6.1"
   },
   "volta": {
     "node": "16.13.0"
