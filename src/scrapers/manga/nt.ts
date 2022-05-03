@@ -85,11 +85,15 @@ export default class NettruyenScraper extends MangaScraper {
 
     return {
       chapters,
-      description,
+      description: {
+        vietnamese: description,
+      },
       sourceId: this.id,
       sourceMediaId: sourceId,
       titles,
-      vietnameseTitle,
+      title: {
+        vietnamese: vietnameseTitle,
+      },
     };
   }
 

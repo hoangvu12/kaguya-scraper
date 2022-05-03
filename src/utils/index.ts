@@ -151,10 +151,7 @@ export const isValidUrl = (text: string) => {
 };
 
 export const getTitle = (data: Media) => {
-  const title =
-    typeof data?.title === 'string' ? data?.title : data?.title.userPreferred;
-
-  return data?.vietnameseTitle || title;
+  return data?.title?.vietnamese || data?.title.userPreferred;
 };
 
 export const sleep = (ms: number) =>

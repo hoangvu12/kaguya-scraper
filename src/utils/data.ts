@@ -13,6 +13,14 @@ export const mergeMangaInfo = (
 ): Manga => {
   return {
     ...anilist,
+    title: {
+      ...anilist.title,
+      ...source.title,
+    },
+    description: {
+      ...anilist.description,
+      ...source.description,
+    },
     sourceMangaConnection: {
       id: `${source.sourceMediaId}-${source.sourceId}`,
       mediaId: anilist.id,
@@ -27,8 +35,6 @@ export const mergeMangaInfo = (
       sourceId: source.sourceId,
       slug: `${source.sourceId}-${chapter.sourceChapterId}`,
     })),
-    vietnameseTitle: source.vietnameseTitle,
-    description: source.description,
   };
 };
 
@@ -38,6 +44,14 @@ export const mergeAnimeInfo = (
 ): Anime => {
   return {
     ...anilist,
+    title: {
+      ...anilist.title,
+      ...source.title,
+    },
+    description: {
+      ...anilist.description,
+      ...source.description,
+    },
     sourceAnimeConnection: {
       id: `${source.sourceMediaId}-${source.sourceId}`,
       mediaId: anilist.id,
@@ -52,7 +66,5 @@ export const mergeAnimeInfo = (
       sourceId: source.sourceId,
       slug: `${source.sourceId}-${episode.sourceEpisodeId}`,
     })),
-    vietnameseTitle: source.vietnameseTitle,
-    description: source.description,
   };
 };

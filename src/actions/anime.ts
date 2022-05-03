@@ -33,7 +33,6 @@ export const animeAction = createAction<Anime>({
     'totalEpisodes',
     'tags',
     'description',
-    'vietnameseTitle',
     'isAdult',
     'genres',
     'averageScore',

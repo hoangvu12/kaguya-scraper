@@ -79,8 +79,12 @@ export default class AnimeVietsubScraper extends AnimeScraper {
 
     return {
       titles,
-      vietnameseTitle,
-      description,
+      title: {
+        vietnamese: vietnameseTitle,
+      },
+      description: {
+        vietnamese: description,
+      },
       episodes,
       sourceId: this.id,
       sourceMediaId: animeId,

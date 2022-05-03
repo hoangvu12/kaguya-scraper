@@ -4,8 +4,14 @@ import {
   MediaFormat,
   MediaRelation,
   MediaStatus,
-  MediaTitle,
+  MediaTitle as ALMediaTitle,
 } from './anilist';
+
+export interface MediaTitle extends Partial<ALMediaTitle> {
+  [key: string]: string;
+}
+
+export type MediaDescription = Record<string, string>;
 
 export type Episode = {
   name: string;
@@ -157,7 +163,7 @@ export interface Media {
   isAdult: boolean;
   synonyms: string[];
   averageScore: number;
-  vietnameseTitle?: string;
+  description: MediaDescription;
 }
 
 export interface AnilistAnime extends Media {
@@ -180,11 +186,11 @@ export interface SourceEpisode {
 }
 export interface SourceAnime {
   titles: string[];
-  description: string;
+  description: MediaDescription;
   episodes: SourceEpisode[];
   sourceId: string;
   sourceMediaId: string;
-  vietnameseTitle?: string;
+  title: MediaTitle;
 }
 export interface SourceChapter {
   name: string;
@@ -193,11 +199,11 @@ export interface SourceChapter {
 }
 export interface SourceManga {
   titles: string[];
-  description: string;
+  description: MediaDescription;
   chapters: SourceChapter[];
   sourceId: string;
   sourceMediaId: string;
-  vietnameseTitle?: string;
+  title: MediaTitle;
 }
 
 export interface SourceMediaConnection {
@@ -214,7 +220,6 @@ export interface Source {
 export interface Anime extends AnilistAnime {
   episodes: Episode[];
   sourceAnimeConnection: SourceMediaConnection;
-  description: string;
 }
 
 export interface AnilistManga extends Media {
@@ -224,7 +229,6 @@ export interface AnilistManga extends Media {
 export interface Manga extends AnilistManga {
   chapters: Chapter[];
   sourceMangaConnection: SourceMediaConnection;
-  description: string;
 }
 
 export type MediaUnit = Episode | Chapter | SourceEpisode | SourceChapter;

@@ -25,7 +25,6 @@ export const mangaAction = createAction<Manga, Manga>({
     'status',
     'tags',
     'description',
-    'vietnameseTitle',
     'isAdult',
     'genres',
     'averageScore',

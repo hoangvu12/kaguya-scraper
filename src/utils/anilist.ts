@@ -15,6 +15,7 @@ query ($id: Int, $search: String, $type: MediaType) {
     sort: SEARCH_MATCH
     status_not: NOT_YET_RELEASED
   ) {
+    description
     trailer {
       id
       site
@@ -186,6 +187,9 @@ const composeMangaData = (media: Media): AnilistManga => {
   const isManga = (type) => type === 'MANGA';
 
   return {
+    description: {
+      english: media.description,
+    },
     averageScore: media.averageScore,
     totalChapters: media.chapters,
     countryOfOrigin: media.countryOfOrigin,
@@ -200,6 +204,7 @@ const composeMangaData = (media: Media): AnilistManga => {
     popularity: media.popularity,
     status: media.status,
     trending: media.trending,
+    // @ts-ignore
     title: media.title,
     coverImage: media.coverImage,
     startDate: media.startDate,
@@ -261,6 +266,9 @@ const composeAnimeData = (media: Media): AnilistAnime => {
     media?.trailer?.site === 'youtube' ? media?.trailer?.id : null;
 
   return {
+    description: {
+      english: media.description,
+    },
     trailer,
     duration: media.duration,
     averageScore: media.averageScore,
@@ -278,6 +286,7 @@ const composeAnimeData = (media: Media): AnilistAnime => {
     seasonYear: media.seasonYear,
     status: media.status,
     trending: media.trending,
+    // @ts-ignore
     title: media.title,
     coverImage: media.coverImage,
     startDate: media.startDate,
