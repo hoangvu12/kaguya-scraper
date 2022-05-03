@@ -378,7 +378,7 @@ export const getInfo = async <T extends MediaType>(
       ...data.synonyms,
     ]);
 
-    if (bestMatch.rating < 0.8) {
+    if (bestMatch.rating < 0.6) {
       console.log('Success but not exact', title);
 
       return null;
