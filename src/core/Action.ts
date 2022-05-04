@@ -1,5 +1,6 @@
 import chunk from 'lodash/chunk';
 import uniqBy from 'lodash/uniqBy';
+import uniqWith from 'lodash/uniqWith';
 import { pickArrayOfObject } from '../utils';
 import supabase from '../lib/supabase';
 import { Keys } from '../types/utils';
@@ -44,7 +45,11 @@ export const insertData = async <T>(
     const transformedData = transform(uniqBy(data, transformUniqueKey));
     let pickedData = pickArrayOfObject(transformedData, keys);
 
-    if (!Array.isArray(uniqueKey)) {
+    if (Array.isArray(uniqueKey)) {
+      pickedData = uniqWith(pickedData, (a, b) =>
+        uniqueKey.every((key: string) => a[key] === b[key]),
+      );
+    } else if (uniqueKey) {
       pickedData = uniqBy(pickedData, uniqueKey);
     }
 
