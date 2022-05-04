@@ -15,11 +15,11 @@ export const mergeMangaInfo = (
     ...anilist,
     title: {
       ...anilist.title,
-      ...source.title,
+      ...source?.title,
     },
     description: {
       ...anilist.description,
-      ...source.description,
+      ...source?.description,
     },
     sourceMangaConnection: {
       id: `${source.sourceMediaId}-${source.sourceId}`,
@@ -46,11 +46,11 @@ export const mergeAnimeInfo = (
     ...anilist,
     title: {
       ...anilist.title,
-      ...source.title,
+      ...source?.title,
     },
     description: {
       ...anilist.description,
-      ...source.description,
+      ...source?.description,
     },
     sourceAnimeConnection: {
       id: `${source.sourceMediaId}-${source.sourceId}`,

@@ -186,11 +186,11 @@ export interface SourceEpisode {
 }
 export interface SourceAnime {
   titles: string[];
-  description: MediaDescription;
+  description?: MediaDescription;
   episodes: SourceEpisode[];
   sourceId: string;
   sourceMediaId: string;
-  title: MediaTitle;
+  title?: MediaTitle;
 }
 export interface SourceChapter {
   name: string;
@@ -199,11 +199,11 @@ export interface SourceChapter {
 }
 export interface SourceManga {
   titles: string[];
-  description: MediaDescription;
+  description?: MediaDescription;
   chapters: SourceChapter[];
   sourceId: string;
   sourceMediaId: string;
-  title: MediaTitle;
+  title?: MediaTitle;
 }
 
 export interface SourceMediaConnection {
