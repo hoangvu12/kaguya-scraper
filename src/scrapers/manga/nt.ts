@@ -8,6 +8,7 @@ export default class NettruyenScraper extends MangaScraper {
   constructor() {
     super('nt', 'NT', { baseURL: 'http://www.nettruyenmoi.com' });
 
+    this.locales = ['vi'];
     this.monitorInterval = 20 * 60 * 1000; // 20 minutes
   }
 

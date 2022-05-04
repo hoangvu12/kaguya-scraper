@@ -15,6 +15,8 @@ export default class AnimeVietsubScraper extends AnimeScraper {
 
   constructor() {
     super('avs', 'AVS', { baseURL: 'https://animevietsub.tv' });
+
+    this.locales = ['vi'];
   }
 
   shouldMonitorChange(oldPage: string, newPage: string): boolean {

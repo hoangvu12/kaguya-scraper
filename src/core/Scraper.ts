@@ -28,6 +28,7 @@ export default class Scraper {
   monitorAxiosConfig: AxiosRequestConfig;
   disableMonitorRequest: boolean;
   proxy: Proxy;
+  locales: string[];
 
   constructor(
     id: string,
@@ -81,6 +82,7 @@ export default class Scraper {
       {
         id: this.id,
         name: this.name,
+        locales: this.locales,
       },
       { ignoreDuplicates: true, returning: 'minimal' },
     );
