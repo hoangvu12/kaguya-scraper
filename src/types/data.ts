@@ -191,6 +191,7 @@ export interface SourceAnime {
   sourceId: string;
   sourceMediaId: string;
   title?: MediaTitle;
+  anilistId?: number;
 }
 export interface SourceChapter {
   name: string;
@@ -204,6 +205,8 @@ export interface SourceManga {
   sourceId: string;
   sourceMediaId: string;
   title?: MediaTitle;
+  anilistId?: number;
+
 }
 
 export interface SourceMediaConnection {

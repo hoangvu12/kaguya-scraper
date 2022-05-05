@@ -5,7 +5,7 @@ import { MediaType } from '../types/anilist';
 import { Manga, SourceManga } from '../types/data';
 import { RequireAtLeastOne } from '../types/utils';
 import { readFile, writeFile } from '../utils';
-import { getRetriesInfo } from '../utils/anilist';
+import { getInfoById, getRetriesInfo } from '../utils/anilist';
 import { mergeMangaInfo } from '../utils/data';
 import Scraper from './Scraper';
 
@@ -64,7 +64,13 @@ export default class MangaScraper extends Scraper {
     for (const source of sources) {
       if (!source?.titles?.length) continue;
 
-      const anilist = await getRetriesInfo(source.titles, MediaType.Manga);
+      let anilist: Manga;
+
+      if (source.anilistId) {
+        anilist = await getInfoById(source.anilistId, MediaType.Manga);
+      } else {
+        anilist = await getRetriesInfo(source.titles, MediaType.Manga);
+      }
 
       if (!anilist) continue;
 
