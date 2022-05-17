@@ -41,8 +41,6 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "dev": "nodemon",
-    "commands": "node build/src/deployCommands.js",
-    "permissions": "node build/src/permission.js",
     "scrapers:init": "node build/src/initScrapers.js",
     "webPush:generate": "node build/src/generateWebPush.js",
     "cli": "node build/src/cli/index.js"
