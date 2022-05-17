@@ -17,8 +17,15 @@
     "noImplicitAny": false,
     "noImplicitThis": false,
     "strictNullChecks": false,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true
   },
-  "exclude": ["src/cli/templates/*"],
+  "exclude": [
+    "src/cli/templates/*",
+    "node_modules",
+    "./node_modules",
+    "./node_modules/*",
+    "./node_modules/@types/node/index.d.ts"
+  ],
   "include": ["src/**/*", "__tests__/**/*"]
 }
