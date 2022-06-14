@@ -1,4 +1,5 @@
 import { PushSubscription } from 'web-push';
+import { getlatestMediaUnit } from '.';
 import supabase from '../lib/supabase';
 import webPush from '../lib/webPush';
 import logger from '../logger';
@@ -51,9 +52,13 @@ interface MediaWithChapters extends Omit<Media, 'chapters'> {
   chapters: Chapter[];
 }
 
+type MediaWithMediaUnit<T> = T extends MediaType.Anime
+  ? MediaWithEpisodes
+  : MediaWithChapters;
+
 export const handlePushNotification = async <
+  T extends MediaWithMediaUnit<K>,
   K extends MediaType,
-  T extends K extends MediaType.Anime ? MediaWithEpisodes : MediaWithChapters,
 >(
   list: T[],
   type: K,
@@ -77,13 +82,26 @@ export const handlePushNotification = async <
       );
 
       const title = source.title.userPreferred;
+      let mediaUnitName = '';
+
+      if ('episodes' in source) {
+        mediaUnitName = getlatestMediaUnit(source.episodes as Episode[]).name;
+      }
+
+      if ('chapters' in source) {
+        mediaUnitName = getlatestMediaUnit(source.chapters as Chapter[]).name;
+      }
+
+      const mediaRedirectUrl = isAnime
+        ? `/anime/details/${source.id}`
+        : `/manga/details/${source.id}`;
 
       const data = JSON.stringify({
-        title: `${title} ${mediaName} mới tại Kaguya.`,
+        title: `${title} ${mediaName} mới (${mediaUnitName}) tại Kaguya.`,
         body: `Bấm vào đây để xem.`,
         image: source.bannerImage || source.coverImage.extraLarge,
         data: {
-          redirectUrl: `/${type}/details/${source.id}`,
+          redirectUrl: mediaRedirectUrl,
         },
       });
 
