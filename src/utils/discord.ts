@@ -1,5 +1,5 @@
 import { TextChannel } from 'discord.js';
-import { getlatestMediaUnit, getTitle } from '.';
+import { getlatestMediaUnit } from '.';
 import AnimeScraper from '../core/AnimeScraper';
 import MangaScraper from '../core/MangaScraper';
 import { getChannel } from '../lib/Discord';
@@ -42,7 +42,7 @@ export const handleLog = <T extends MediaType>(
     message += `\n\n${labelType} ${headerSuffix} (${scraper.name}):`;
 
     data.slice(0, MAX_RECORDS).forEach((source) => {
-      const title = getTitle(source);
+      const title = source.title.userPreferred;
       const latestUnit = getlatestMediaUnit(
         isAnime ? source.episodes : source.chapters,
       );

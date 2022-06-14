@@ -1,10 +1,9 @@
 import { PushSubscription } from 'web-push';
-import { getTitle } from '.';
 import supabase from '../lib/supabase';
 import webPush from '../lib/webPush';
 import logger from '../logger';
-import { MediaType } from '../types/anilist';
-import { Media } from '../types/data';
+import { Media, MediaType } from '../types/anilist';
+import { Chapter, Episode } from '../types/data';
 
 type Subscription = {
   userAgent: string;
@@ -44,9 +43,17 @@ export const getSubscribers = async (type: MediaType, sourceIds: number[]) => {
   }));
 };
 
+interface MediaWithEpisodes extends Omit<Media, 'episodes'> {
+  episodes: Episode[];
+}
+
+interface MediaWithChapters extends Omit<Media, 'chapters'> {
+  chapters: Chapter[];
+}
+
 export const handlePushNotification = async <
   K extends MediaType,
-  T extends Media,
+  T extends K extends MediaType.Anime ? MediaWithEpisodes : MediaWithChapters,
 >(
   list: T[],
   type: K,
@@ -69,7 +76,7 @@ export const handlePushNotification = async <
         (subscriber) => subscriber.mediaId === source.id,
       );
 
-      const title = getTitle(source);
+      const title = source.title.userPreferred;
 
       const data = JSON.stringify({
         title: `${title} ${mediaName} mới tại Kaguya.`,

@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import fs from 'fs';
 import pick from 'lodash/pick';
 import path from 'path';
-import { Media, MediaUnit } from '../types/data';
+import { MediaUnit } from '../types/data';
 
 export const pickArrayOfObject = <T, K extends keyof T>(data: T[], keys: K[]) =>
   data.map((each) => pick(each, keys));
@@ -148,10 +148,6 @@ export const isValidUrl = (text: string) => {
   }
 
   return url.protocol === 'http:' || url.protocol === 'https:';
-};
-
-export const getTitle = (data: Media) => {
-  return data?.title?.vietnamese || data?.title.userPreferred;
 };
 
 export const sleep = (ms: number) =>

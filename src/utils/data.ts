@@ -1,29 +1,14 @@
-import {
-  SourceManga,
-  AnilistManga,
-  Manga,
-  SourceAnime,
-  AnilistAnime,
-  Anime,
-} from '../types/data';
+import { Anime, Manga, SourceAnime, SourceManga } from '../types/data';
 
 export const mergeMangaInfo = (
   source: SourceManga,
-  anilist: AnilistManga,
+  anilistId: number,
 ): Manga => {
   return {
-    ...anilist,
-    title: {
-      ...anilist.title,
-      ...source?.title,
-    },
-    description: {
-      ...anilist.description,
-      ...source?.description,
-    },
+    anilistId,
     sourceMangaConnection: {
       id: `${source.sourceMediaId}-${source.sourceId}`,
-      mediaId: anilist.id,
+      mediaId: anilistId,
       sourceMediaId: source.sourceMediaId,
       sourceId: source.sourceId,
     },
@@ -40,21 +25,13 @@ export const mergeMangaInfo = (
 
 export const mergeAnimeInfo = (
   source: SourceAnime,
-  anilist: AnilistAnime,
+  anilistId: number,
 ): Anime => {
   return {
-    ...anilist,
-    title: {
-      ...anilist.title,
-      ...source?.title,
-    },
-    description: {
-      ...anilist.description,
-      ...source?.description,
-    },
+    anilistId,
     sourceAnimeConnection: {
       id: `${source.sourceMediaId}-${source.sourceId}`,
-      mediaId: anilist.id,
+      mediaId: anilistId,
       sourceMediaId: source.sourceMediaId,
       sourceId: source.sourceId,
     },

@@ -6,7 +6,7 @@ import { fulfilledPromises } from '../../utils';
 
 export default class NettruyenScraper extends MangaScraper {
   constructor() {
-    super('nt', 'NT', { baseURL: 'http://www.nettruyenmoi.com' });
+    super('nt', 'NT', { baseURL: 'http://www.nettruyenco.com' });
 
     this.locales = ['vi'];
     this.monitorInterval = 20 * 60 * 1000; // 20 minutes
@@ -54,13 +54,12 @@ export default class NettruyenScraper extends MangaScraper {
 
     const blacklistKeys = ['truyện chữ'];
 
-    const description = $('.detail-content p').text().trim();
     const mainTitle = $('.title-detail').text().trim();
     const altTitle = this.parseTitle($('.other-name').text().trim());
 
     const allTitles = [mainTitle, ...altTitle];
 
-    const { titles, vietnameseTitle } = this.filterTitles(allTitles);
+    const { titles } = this.filterTitles(allTitles);
 
     if (
       allTitles.some((title) =>
@@ -86,15 +85,9 @@ export default class NettruyenScraper extends MangaScraper {
 
     return {
       chapters,
-      description: {
-        vietnamese: description,
-      },
       sourceId: this.id,
       sourceMediaId: sourceId,
       titles,
-      title: {
-        vietnamese: vietnameseTitle,
-      },
     };
   }
 

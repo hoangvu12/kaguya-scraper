@@ -1,12 +1,10 @@
-import { AnilistAnime, AnilistManga, Anime, Manga } from '../types/data';
-
 import axios from 'axios';
-import axiosRetry from 'axios-retry';
-import { Media, MediaType } from '../types/anilist';
 import axiosRateLimit from 'axios-rate-limit';
+import axiosRetry from 'axios-retry';
 import { findBestMatch, sleep } from '.';
+import { Media, MediaType, Page } from '../types/anilist';
 
-const query = `
+const idQuery = `
 query ($id: Int, $search: String, $type: MediaType) {
   Media(
     id: $id
@@ -15,152 +13,234 @@ query ($id: Int, $search: String, $type: MediaType) {
     sort: SEARCH_MATCH
     status_not: NOT_YET_RELEASED
   ) {
-    description
-    trailer {
-      id
-      site
-    }
     id
-    idMal
-    title {
-      romaji
-      english
-      native
-      userPreferred
+  }
+}
+`;
+
+const mediaQuery = `
+query (
+  $page: Int = 1,
+  $perPage: Int = 50,
+  $id: Int
+  $idMal: Int
+  $startDate: FuzzyDateInt
+  $endDate: FuzzyDateInt
+  $season: MediaSeason
+  $seasonYear: Int
+  $type: MediaType
+  $format: MediaFormat
+  $status: MediaStatus
+  $episodes: Int
+  $duration: Int
+  $chapters: Int
+  $volumes: Int
+  $isAdult: Boolean
+  $genre: String
+  $tag: String
+  $minimumTagRank: Int
+  $tagCategory: String
+  $onList: Boolean
+  $licensedBy: String
+  $licensedById: Int
+  $averageScore: Int
+  $popularity: Int
+  $source: MediaSource
+  $countryOfOrigin: CountryCode
+  $isLicensed: Boolean
+  $search: String
+  $id_not: Int
+  $id_in: [Int]
+  $id_not_in: [Int]
+  $idMal_not: Int
+  $idMal_in: [Int]
+  $idMal_not_in: [Int]
+  $startDate_greater: FuzzyDateInt
+  $startDate_lesser: FuzzyDateInt
+  $startDate_like: String
+  $endDate_greater: FuzzyDateInt
+  $endDate_lesser: FuzzyDateInt
+  $endDate_like: String
+  $format_in: [MediaFormat]
+  $format_not: MediaFormat
+  $format_not_in: [MediaFormat]
+  $status_in: [MediaStatus]
+  $status_not: MediaStatus
+  $status_not_in: [MediaStatus]
+  $episodes_greater: Int
+  $episodes_lesser: Int
+  $duration_greater: Int
+  $duration_lesser: Int
+  $chapters_greater: Int
+  $chapters_lesser: Int
+  $volumes_greater: Int
+  $volumes_lesser: Int
+  $genre_in: [String]
+  $genre_not_in: [String]
+  $tag_in: [String]
+  $tag_not_in: [String]
+  $tagCategory_in: [String]
+  $tagCategory_not_in: [String]
+  $licensedBy_in: [String]
+  $licensedById_in: [Int]
+  $averageScore_not: Int
+  $averageScore_greater: Int
+  $averageScore_lesser: Int
+  $popularity_not: Int
+  $popularity_greater: Int
+  $popularity_lesser: Int
+  $source_in: [MediaSource]
+  $sort: [MediaSort]
+) {
+  Page(page: $page, perPage: $perPage) {
+    pageInfo {
+      total
+      perPage
+      currentPage
+      lastPage
+      hasNextPage
     }
-    coverImage {
-      extraLarge
-      large
-      medium
-      color
-    }
-    startDate {
-      year
-      month
-      day
-    }
-    trending
-    popularity
-    favourites
-    bannerImage
-    season
-    seasonYear
-    format
-    status(version: 2)
-    chapters
-    episodes
-    duration
-    genres
-    isAdult
-    countryOfOrigin
-    averageScore
-    synonyms
-    studios {
-      edges {
-        id
-        isMain
-        node {
-          id
-          name
-          isAnimationStudio
-          favourites
-        }
+    media(
+      id: $id
+      idMal: $idMal
+      startDate: $startDate
+      endDate: $endDate
+      season: $season
+      seasonYear: $seasonYear
+      type: $type
+      format: $format
+      status: $status
+      episodes: $episodes
+      duration: $duration
+      chapters: $chapters
+      volumes: $volumes
+      isAdult: $isAdult
+      genre: $genre
+      tag: $tag
+      minimumTagRank: $minimumTagRank
+      tagCategory: $tagCategory
+      onList: $onList
+      licensedBy: $licensedBy
+      licensedById: $licensedById
+      averageScore: $averageScore
+      popularity: $popularity
+      source: $source
+      countryOfOrigin: $countryOfOrigin
+      isLicensed: $isLicensed
+      search: $search
+      id_not: $id_not
+      id_in: $id_in
+      id_not_in: $id_not_in
+      idMal_not: $idMal_not
+      idMal_in: $idMal_in
+      idMal_not_in: $idMal_not_in
+      startDate_greater: $startDate_greater
+      startDate_lesser: $startDate_lesser
+      startDate_like: $startDate_like
+      endDate_greater: $endDate_greater
+      endDate_lesser: $endDate_lesser
+      endDate_like: $endDate_like
+      format_in: $format_in
+      format_not: $format_not
+      format_not_in: $format_not_in
+      status_in: $status_in
+      status_not: $status_not
+      status_not_in: $status_not_in
+      episodes_greater: $episodes_greater
+      episodes_lesser: $episodes_lesser
+      duration_greater: $duration_greater
+      duration_lesser: $duration_lesser
+      chapters_greater: $chapters_greater
+      chapters_lesser: $chapters_lesser
+      volumes_greater: $volumes_greater
+      volumes_lesser: $volumes_lesser
+      genre_in: $genre_in
+      genre_not_in: $genre_not_in
+      tag_in: $tag_in
+      tag_not_in: $tag_not_in
+      tagCategory_in: $tagCategory_in
+      tagCategory_not_in: $tagCategory_not_in
+      licensedBy_in: $licensedBy_in
+      licensedById_in: $licensedById_in
+      averageScore_not: $averageScore_not
+      averageScore_greater: $averageScore_greater
+      averageScore_lesser: $averageScore_lesser
+      popularity_not: $popularity_not
+      popularity_greater: $popularity_greater
+      popularity_lesser: $popularity_lesser
+      source_in: $source_in
+      sort: $sort
+    ) {
+      id
+      idMal
+      title {
+        romaji
+        english
+        native
+        userPreferred
       }
-    }
-    characters(sort: ROLE) {
-      edges {
+      type
+      format
+      status
+      description
+      startDate {
+        year
+        month
+        day
+      }
+      endDate {
+        year
+        month
+        day
+      }
+      season
+      seasonYear
+      seasonInt
+      episodes
+      duration
+      chapters
+      volumes
+      countryOfOrigin
+      isLicensed
+      source
+      hashtag
+      trailer {
+        id
+        site
+        thumbnail
+      }
+      updatedAt
+      coverImage {
+        extraLarge
+        large
+        medium
+        color
+      }
+      bannerImage
+      genres
+      synonyms
+      averageScore
+      meanScore
+      popularity
+      isLocked
+      trending
+      favourites
+      tags {
         id
         name
-        role
-        voiceActors {
-          id
-          name {
-            first
-            middle
-            last
-            full
-            native
-            userPreferred
-          }
-          primaryOccupations
-          language: languageV2
-          image {
-            large
-            medium
-          }
-          gender
-          dateOfBirth {
-            year
-            month
-            day
-          }
-          dateOfDeath {
-            year
-            month
-            day
-          }
-          age
-          yearsActive
-          homeTown
-          bloodType
-          favourites
-        }
-        node {
-          id
-          name {
-            first
-            middle
-            last
-            full
-            native
-            userPreferred
-          }
-          image {
-            large
-            medium
-          }
-          gender
-          dateOfBirth {
-            year
-            month
-            day
-          }
-          age
-          favourites
-          bloodType
-        }
+        description
+        category
+        rank
+        isGeneralSpoiler
+        isMediaSpoiler
+        isAdult
+        userId
       }
-    }
-    relations {
-      edges {
-        relationType(version: 2)
-        node {
-          id
-          type
-        }
-      }
-    }
-    recommendations(sort: RATING_DESC) {
-      nodes {
-        mediaRecommendation {
-          id
-          type
-        }
-      }
-    }
-    airingSchedule(notYetAired: true) {
-      nodes {
-        airingAt
-        episode
-        mediaId
-        id
-      }
-    }
-    tags {
-      name
+      isAdult
     }
   }
 }
+
 `;
 
 axiosRetry(axios, { retries: 3 });
@@ -176,191 +256,47 @@ client.interceptors.request.use(async (config) => {
   return config;
 });
 
-const composeMangaData = (media: Media): AnilistManga => {
-  if (!media) return null;
-
-  const relations = media.relations?.edges || [];
-  const recommendations = media.recommendations?.nodes || [];
-  const characterConnections = media.characters?.edges || [];
-  const tags = media.tags || [];
-
-  const isManga = (type) => type === 'MANGA';
-
-  return {
-    description: {
-      english: media.description,
-    },
-    averageScore: media.averageScore,
-    totalChapters: media.chapters,
-    countryOfOrigin: media.countryOfOrigin,
-    isAdult: media.isAdult,
-    synonyms: media.synonyms,
-    genres: media.genres,
-    bannerImage: media.bannerImage,
-    favourites: media.favourites,
-    format: media.format,
-    id: media.id,
-    idMal: media.idMal,
-    popularity: media.popularity,
-    status: media.status,
-    trending: media.trending,
-    // @ts-ignore
-    title: media.title,
-    coverImage: media.coverImage,
-    startDate: media.startDate,
-    characters: characterConnections.map((connection) => connection.node),
-    characterConnections: characterConnections.map((connection) => ({
-      id: connection.id,
-      role: connection.role,
-      name: connection.name,
-      characterId: connection.node?.id,
-      mediaId: media.id,
-    })),
-
-    relations: relations
-      .filter((relation) => isManga(relation?.node?.type))
-      .map((relation) => ({
-        relationId: relation?.node?.id,
-        originalId: media.id,
-        relationType: relation?.relationType,
-      })),
-
-    recommendations: recommendations
-      .filter((recommendation) =>
-        isManga(recommendation?.mediaRecommendation?.type),
-      )
-      .map((recommendation) => ({
-        recommendationId: recommendation?.mediaRecommendation?.id,
-        originalId: media.id,
-      })),
-    tags: tags.map((tag) => tag.name),
-  };
-};
-
-const composeAnimeData = (media: Media): AnilistAnime => {
-  if (!media) return null;
-
-  const relations = media.relations?.edges || [];
-  const recommendations = media.recommendations?.nodes || [];
-  const characterConnections = media.characters?.edges || [];
-  const studioConnections = media.studios?.edges || [];
-  const airingSchedules = media.airingSchedule?.nodes || [];
-  const tags = media.tags || [];
-
-  const voiceActors = characterConnections
-    .map((connection) => connection.voiceActors)
-    .flat();
-
-  const voiceActorConnections = characterConnections
-    .map((connection) =>
-      connection.voiceActors.map((voiceActor) => ({
-        voiceActorId: voiceActor.id,
-        characterId: connection.node?.id,
-      })),
-    )
-    .flat(2);
-
-  const isAnime = (type) => type === 'ANIME';
-
-  const trailer =
-    media?.trailer?.site === 'youtube' ? media?.trailer?.id : null;
-
-  return {
-    description: {
-      english: media.description,
-    },
-    trailer,
-    duration: media.duration,
-    averageScore: media.averageScore,
-    countryOfOrigin: media.countryOfOrigin,
-    isAdult: media.isAdult,
-    synonyms: media.synonyms,
-    genres: media.genres,
-    bannerImage: media.bannerImage,
-    favourites: media.favourites,
-    format: media.format,
-    id: media.id,
-    idMal: media.idMal,
-    popularity: media.popularity,
-    season: media.season,
-    seasonYear: media.seasonYear,
-    status: media.status,
-    trending: media.trending,
-    // @ts-ignore
-    title: media.title,
-    coverImage: media.coverImage,
-    startDate: media.startDate,
-    studios: studioConnections.map((connection) => connection.node),
-    studioConnections: studioConnections.map((connection) => ({
-      id: connection.id,
-      studioId: connection.node?.id,
-      isMain: connection.isMain,
-      mediaId: media.id,
-    })),
-    characters: characterConnections.map((connection) => connection.node),
-    characterConnections: characterConnections.map((connection) => ({
-      id: connection.id,
-      role: connection.role,
-      name: connection.name,
-      characterId: connection.node?.id,
-      mediaId: media.id,
-    })),
-    voiceActors: voiceActors,
-    voiceActorConnections: voiceActorConnections,
-    relations: relations
-      .filter((relation) => isAnime(relation?.node?.type))
-      .map((relation) => ({
-        relationId: relation?.node?.id,
-        originalId: media.id,
-        relationType: relation?.relationType,
-      })),
-
-    recommendations: recommendations
-      .filter((recommendation) =>
-        isAnime(recommendation?.mediaRecommendation?.type),
-      )
-      .map((recommendation) => ({
-        recommendationId: recommendation?.mediaRecommendation?.id,
-        originalId: media.id,
-      })),
-    airingSchedules,
-    tags: tags.map((tag) => tag.name),
-    totalEpisodes: media.episodes,
-  };
-};
-
-export const getInfoById = async <T extends MediaType>(
-  ani_id: number,
-  type: T,
-): Promise<T extends MediaType.Anime ? Anime : Manga> => {
-  const body = {
-    query,
-    variables: {
-      type,
-      id: ani_id,
-    },
-  };
+export const getMediaList = async (ids: number[], type: MediaType) => {
+  let list: Media[] = [];
+  let page = 1;
 
   try {
-    const data = await fetch(body);
+    const fetchList = async () => {
+      const body = {
+        query: mediaQuery,
+        variables: {
+          type,
+          id_in: ids,
+          page,
+        },
+      };
 
-    console.log('Success', ani_id);
+      const data = await fetch<{ Page: Page }>(body);
 
-    // @ts-ignore
-    return type === MediaType.Anime
-      ? composeAnimeData(data)
-      : composeMangaData(data);
+      list = list.concat(data.Page.media);
+
+      if (data?.Page?.pageInfo?.hasNextPage) {
+        await sleep(1000);
+
+        page++;
+        fetchList();
+      }
+    };
+
+    await fetchList();
+
+    return list;
   } catch (err) {
-    console.log(err.message, ani_id);
+    console.log(err);
   }
 };
 
-export const getInfo = async <T extends MediaType>(
+export const getIdByTitle = async <T extends MediaType>(
   title: string,
   type: T,
-): Promise<T extends MediaType.Anime ? Anime : Manga> => {
+) => {
   const body = {
-    query,
+    query: idQuery,
     variables: {
       type,
       sort: 'SEARCH_MATCH',
@@ -369,13 +305,15 @@ export const getInfo = async <T extends MediaType>(
   };
 
   try {
-    const data = await fetch(body);
+    const data = await fetch<{ Media: Media }>(body);
 
     if (!data) return null;
 
+    const media = data.Media;
+
     const { bestMatch } = findBestMatch(title, [
-      ...Object.values(data.title),
-      ...data.synonyms,
+      ...Object.values(media.title),
+      ...media.synonyms,
     ]);
 
     if (bestMatch.rating < 0.6) {
@@ -386,10 +324,7 @@ export const getInfo = async <T extends MediaType>(
 
     console.log('Success', title);
 
-    // @ts-ignore
-    return type === MediaType.Anime
-      ? composeAnimeData(data)
-      : composeMangaData(data);
+    return media?.id;
   } catch (err) {
     console.log(err, title);
   }
@@ -402,24 +337,28 @@ type Body = {
   };
 };
 
-const fetch = async (body: Body) => {
-  try {
-    const { data } = await client.post('https://graphql.anilist.co/', body, {
-      timeout: 20000,
-    });
+interface AnilistResponse<T> {
+  data: T;
+}
 
-    return data?.data?.Media as Media;
-  } catch (err) {
-    throw new Error(err);
-  }
+const fetch = async <T>(body: Body) => {
+  const { data } = await client.post<AnilistResponse<T>>(
+    'https://graphql.anilist.co/',
+    body,
+    {
+      timeout: 20000,
+    },
+  );
+
+  return data.data;
 };
 
-export const getRetriesInfo = async <T extends MediaType>(
+export const getRetriesId = async <T extends MediaType>(
   titles: string[],
   type: T,
 ) => {
   for (const title of titles) {
-    const data = await getInfo(title, type);
+    const data = await getIdByTitle(title, type);
 
     if (data) return data;
   }

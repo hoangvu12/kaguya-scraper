@@ -1,23 +1,17 @@
 import uniqWith from 'lodash/uniqWith';
+import { animeActions } from '../actions/anime';
 import { createAction, insertData } from '../core/Action';
 import supabase from '../lib/supabase';
 import logger from '../logger';
 import scrapers, { AnimeScraperId, getAnimeScraper } from '../scrapers';
 import { MediaType } from '../types/anilist';
-import {
-  Anime,
-  Episode,
-  SourceAnime,
-  SourceMediaConnection,
-} from '../types/data';
-import { getRetriesInfo } from '../utils/anilist';
-import { animeActions } from '../actions/anime';
+import { Episode, SourceAnime, SourceMediaConnection } from '../types/data';
+import { getMediaList, getRetriesId } from '../utils/anilist';
 import { mergeAnimeInfo } from '../utils/data';
 import { handleLog } from '../utils/discord';
 import { handlePushNotification } from '../utils/notification';
 
 interface SourceMediaConnectionWithMedia extends SourceMediaConnection {
-  media: Anime;
   episodes: Episode[];
 }
 
@@ -45,7 +39,7 @@ const handleNonExistAnime = async (anime: SourceAnime[]) => {
     anime.map(async (anime) => {
       if (!anime?.titles?.length) return;
 
-      const anilist = await getRetriesInfo(anime.titles, MediaType.Anime);
+      const anilist = await getRetriesId(anime.titles, MediaType.Anime);
 
       if (!anilist) return;
 
@@ -74,13 +68,17 @@ export const scrapeNewAnime = async (scraperId: AnimeScraperId) => {
 
     const { data: connections, error } = await supabase
       .from<SourceMediaConnectionWithMedia>('kaguya_anime_source')
-      .select('*, media:mediaId(*), episodes:kaguya_episodes(*)')
+      .select('*, episodes:kaguya_episodes(*)')
       .in('sourceMediaId', sourceMediaIds)
       .eq('sourceId', scraperId);
 
     if (error) {
       throw error;
     }
+
+    const anilistIds = connections.flatMap((connection) => connection.mediaId);
+
+    const anilistList = await getMediaList(anilistIds, MediaType.Anime);
 
     const existSourceMediaIds = connections.map(
       (connection) => connection.sourceMediaId,
@@ -104,8 +102,6 @@ export const scrapeNewAnime = async (scraperId: AnimeScraperId) => {
         .flatMap((anime) => anime.episodes),
       (a, b) => a.name === b.name && a.sourceMediaId === b.sourceMediaId,
     );
-
-    const existAnime = connections.flatMap((connection) => connection.media);
 
     const newEpisodes: Episode[] = sourceEpisodes
       .filter(
@@ -132,7 +128,7 @@ export const scrapeNewAnime = async (scraperId: AnimeScraperId) => {
           );
 
           const episodes = connection.episodes;
-          const anime = existAnime.find(
+          const anime = anilistList.find(
             (anime) => anime.id === connection.mediaId,
           );
 

@@ -58,12 +58,7 @@ export default class AnimeVietsubScraper extends AnimeScraper {
     const title = $('header .Title').text().trim();
     const altTitles = this.parseTitle($('header .SubTitle').text().trim());
 
-    const { titles, vietnameseTitle } = this.filterTitles([
-      title,
-      ...altTitles,
-    ]);
-
-    const description = $('header .Description').text().trim();
+    const { titles } = this.filterTitles([title, ...altTitles]);
 
     const episodes = $('.episode a')
       .toArray()
@@ -81,12 +76,6 @@ export default class AnimeVietsubScraper extends AnimeScraper {
 
     return {
       titles,
-      title: {
-        vietnamese: vietnameseTitle,
-      },
-      description: {
-        vietnamese: description,
-      },
       episodes,
       sourceId: this.id,
       sourceMediaId: animeId,

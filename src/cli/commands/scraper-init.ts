@@ -64,7 +64,7 @@ export default (program: Command) => {
             () => animeScraper.scrapeAnilist(sources),
           );
 
-          await insertData(mergedSources, animeActions, 'id');
+          await insertData(mergedSources, animeActions, 'anilistId');
         } else {
           const mangaScraper = scraper as MangaScraper;
 
@@ -77,7 +77,7 @@ export default (program: Command) => {
             () => mangaScraper.scrapeAnilist(sources),
           );
 
-          await insertData(mergedSources, mangaActions, 'id');
+          await insertData(mergedSources, mangaActions, 'anilistId');
         }
 
         console.log('Scraper init successfully');

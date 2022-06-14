@@ -1,24 +1,18 @@
 import uniq from 'lodash/uniq';
 import uniqWith from 'lodash/uniqWith';
+import { mangaActions } from '../actions/manga';
 import { createAction, insertData } from '../core/Action';
 import supabase from '../lib/supabase';
 import logger from '../logger';
 import scrapers, { getMangaScraper, MangaScraperId } from '../scrapers';
 import { MediaType } from '../types/anilist';
-import {
-  Chapter,
-  Manga,
-  SourceManga,
-  SourceMediaConnection,
-} from '../types/data';
-import { getRetriesInfo } from '../utils/anilist';
+import { Chapter, SourceManga, SourceMediaConnection } from '../types/data';
+import { getMediaList, getRetriesId } from '../utils/anilist';
 import { mergeMangaInfo } from '../utils/data';
 import { handleLog } from '../utils/discord';
-import { mangaActions } from '../actions/manga';
 import { handlePushNotification } from '../utils/notification';
 
 interface SourceMediaConnectionWithMedia extends SourceMediaConnection {
-  media: Manga;
   chapters: Chapter[];
 }
 
@@ -46,7 +40,7 @@ const handleNonExistManga = async (manga: SourceManga[]) => {
     manga.map(async (manga) => {
       if (!manga?.titles?.length) return;
 
-      const anilist = await getRetriesInfo(manga.titles, MediaType.Manga);
+      const anilist = await getRetriesId(manga.titles, MediaType.Manga);
 
       if (!anilist) return;
 
@@ -75,13 +69,17 @@ export const scrapeNewManga = async (scraperId: MangaScraperId) => {
 
     const { data: connections, error } = await supabase
       .from<SourceMediaConnectionWithMedia>('kaguya_manga_source')
-      .select('*, media:mediaId(*), chapters:kaguya_chapters(*)')
+      .select('*, chapters:kaguya_chapters(*)')
       .in('sourceMediaId', sourceMediaIds)
       .eq('sourceId', scraperId);
 
     if (error) {
       throw error;
     }
+
+    const anilistIds = connections.flatMap((connection) => connection.mediaId);
+
+    const anilistList = await getMediaList(anilistIds, MediaType.Manga);
 
     const existSourceMediaIds = connections.map(
       (connection) => connection.sourceMediaId,
@@ -105,8 +103,6 @@ export const scrapeNewManga = async (scraperId: MangaScraperId) => {
         .flatMap((manga) => manga.chapters),
       (a, b) => a.name === b.name && a.sourceMediaId === b.sourceMediaId,
     );
-
-    const existManga = connections.flatMap((connection) => connection.media);
 
     const newChapters: Chapter[] = sourceChapters
       .filter(
@@ -133,7 +129,7 @@ export const scrapeNewManga = async (scraperId: MangaScraperId) => {
           );
 
           const chapters = connection.chapters;
-          const manga = existManga.find(
+          const manga = anilistList.find(
             (manga) => manga.id === connection.mediaId,
           );
 
