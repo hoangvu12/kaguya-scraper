@@ -123,10 +123,6 @@ export const handlePushNotification = async <
           }
         }
       }
-
-      logger.info(
-        `Sent ${subscribers.length} push notifications from ${title}`,
-      );
     }
   } catch (err) {
     logger.error(err);

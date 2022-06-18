@@ -27,8 +27,6 @@ export const handleLog = <T extends MediaType>(
   const labelType = isAnime ? 'Anime' : 'Manga';
 
   if (!result.new?.length && !result.updated?.length) {
-    logger.info(`No new ${labelType} from ${scraper.name} scraped`);
-
     return;
   }
 
@@ -43,9 +41,9 @@ export const handleLog = <T extends MediaType>(
 
     data.slice(0, MAX_RECORDS).forEach((source) => {
       const title = source?.title?.userPreferred;
-      
+
       if (!title) return;
-      
+
       const latestUnit = getlatestMediaUnit(
         isAnime ? source.episodes : source.chapters,
       );
