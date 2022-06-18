@@ -85,19 +85,23 @@ export const handlePushNotification = async <
       let mediaUnitName = '';
 
       if ('episodes' in source) {
-        mediaUnitName = getlatestMediaUnit(source.episodes as Episode[]).name;
+        mediaUnitName = getlatestMediaUnit(source.episodes as Episode[])?.name;
       }
 
       if ('chapters' in source) {
-        mediaUnitName = getlatestMediaUnit(source.chapters as Chapter[]).name;
+        mediaUnitName = getlatestMediaUnit(source.chapters as Chapter[])?.name;
       }
 
       const mediaRedirectUrl = isAnime
         ? `/anime/details/${source.id}`
         : `/manga/details/${source.id}`;
 
+      const notificationTitle = `${title} ${mediaName} mới ${
+        mediaUnitName ? `(${mediaUnitName})` : ''
+      } tại Kaguya.`;
+
       const data = JSON.stringify({
-        title: `${title} ${mediaName} mới (${mediaUnitName}) tại Kaguya.`,
+        title: notificationTitle,
         body: `Bấm vào đây để xem.`,
         image: source.bannerImage || source.coverImage.extraLarge,
         data: {
