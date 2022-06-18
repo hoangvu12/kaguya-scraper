@@ -16,7 +16,7 @@ const transport = new transports.DailyRotateFile({
 
 const logger = createLogger({
   format: combine(errors({ stack: true }), timestamp(), formatLog),
-  transports: [transport],
+  transports: [transport, new transports.Console()],
 });
 
 export default logger;
