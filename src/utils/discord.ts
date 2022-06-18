@@ -42,10 +42,15 @@ export const handleLog = <T extends MediaType>(
     message += `\n\n${labelType} ${headerSuffix} (${scraper.name}):`;
 
     data.slice(0, MAX_RECORDS).forEach((source) => {
-      const title = source.title.userPreferred;
+      const title = source?.title?.userPreferred;
+      
+      if (!title) return;
+      
       const latestUnit = getlatestMediaUnit(
         isAnime ? source.episodes : source.chapters,
       );
+
+      if (!latestUnit?.name) return;
 
       message += `\n  - ${title} - ${latestUnit.name}`;
     });
