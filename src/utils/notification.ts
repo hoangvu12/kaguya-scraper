@@ -85,11 +85,19 @@ export const handlePushNotification = async <
       let mediaUnitName = '';
 
       if ('episodes' in source) {
-        mediaUnitName = getlatestMediaUnit(source.episodes as Episode[])?.name;
+        if (Array.isArray(source?.episodes) && source?.episodes?.length) {
+          mediaUnitName = getlatestMediaUnit(
+            (source?.episodes as Episode[]) || [],
+          )?.name;
+        }
       }
 
       if ('chapters' in source) {
-        mediaUnitName = getlatestMediaUnit(source.chapters as Chapter[])?.name;
+        if (Array.isArray(source?.chapters) && source?.chapters?.length) {
+          mediaUnitName = getlatestMediaUnit(
+            (source?.chapters as Chapter[]) || [],
+          )?.name;
+        }
       }
 
       const mediaRedirectUrl = isAnime
