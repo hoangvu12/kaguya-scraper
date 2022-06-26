@@ -241,3 +241,22 @@ export const convertType = function (value: string) {
 
   return (isNumber && +value) || (!(value in values) && value) || values[value];
 };
+
+export const randomArrayElement = <T>(array: T[]): T => {
+  return array[Math.floor(Math.random() * array.length)];
+};
+
+export const getFilenameFromUrl = (url: string) => {
+  const filename = url.split('/').pop();
+
+  if (!filename) return '';
+
+  return filename.split('?')[0];
+};
+
+export const randomFilename = (extension: string) => {
+  const timestamp = new Date().toISOString().replace(/[-:.]/g, '');
+  const random = ('' + Math.random()).substring(2, 8);
+  const random_number = timestamp + random;
+  return random_number + '.' + extension;
+};
