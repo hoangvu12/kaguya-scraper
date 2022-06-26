@@ -1,14 +1,17 @@
 import apicache from 'apicache';
 import 'dotenv/config';
 import express from 'express';
-import Api400Error from './errors/api400Error';
-import Api404Error from './errors/api404Error';
-import Api500Error from './errors/api500Error';
-import scrapers, {
-  AnimeScraperId,
-  getAnimeClassScraper,
-  MangaScraperId,
-} from './scrapers';
+import videoUploadController from './controllers/videoUploadController';
+import imageSourceController from './controllers/imageSourceController';
+import videoSourceController from './controllers/videoSourceController';
+import auth from './middlewares/auth';
+import checkUploadPermission from './middlewares/checkUploadPermission';
+import validate from './middlewares/validate';
+import scrapers from './scrapers';
+import { videoRemoteUploadValidation } from './validations/videoRemoteUploadValidation';
+import { videoUploadValidation } from './validations/videoUploadValidation';
+import videoRemoteUploadController from './controllers/videoRemoteUploadController';
+import { uploadEpisodeValidation } from './validations/uploadEpisodeValidation';
 
 const cache = apicache.middleware;
 
@@ -19,75 +22,6 @@ const router = express.Router();
 
 router.get('/', (_, res) => {
   res.send('Working yo');
-});
-
-router.get('/images', successCache('1 day'), async (req, res, next) => {
-  const { source_id, source_media_id, chapter_id } = req.query;
-
-  try {
-    if (!source_id) {
-      throw new Api400Error('Missing required query parameters');
-    }
-
-    const animeScrapers = scrapers.manga;
-
-    const scraper = animeScrapers[source_id as MangaScraperId];
-
-    if (!scraper) {
-      throw new Api404Error('Source ID not found');
-    }
-
-    const images = await scraper.getImages({
-      source_id: source_id.toString(),
-      source_media_id: source_media_id.toString(),
-      chapter_id: chapter_id.toString(),
-    });
-
-    if (!images) {
-      throw new Api500Error('No images found');
-    }
-
-    res.status(200).json({
-      success: true,
-      images,
-    });
-  } catch (err) {
-    next(err);
-  }
-});
-
-router.get('/source', successCache('30 minutes'), async (req, res, next) => {
-  const { source_id, source_media_id, episode_id } = req.query;
-
-  try {
-    if (!source_id) {
-      throw new Api400Error('Missing required query parameters');
-    }
-
-    const scraper = getAnimeClassScraper(source_id as AnimeScraperId);
-
-    if (!scraper) {
-      throw new Api404Error('Source ID not found');
-    }
-
-    const { sources, subtitles } = await scraper.getSources({
-      source_id: source_id.toString(),
-      source_media_id: source_media_id.toString(),
-      episode_id: episode_id.toString(),
-    });
-
-    if (!sources) {
-      throw new Api500Error('No sources found');
-    }
-
-    res.status(200).json({
-      success: true,
-      sources,
-      subtitles,
-    });
-  } catch (err) {
-    next(err);
-  }
 });
 
 router.get('/proxy/sources', (_, res) => {
@@ -103,5 +37,29 @@ router.get('/proxy/sources', (_, res) => {
     sources: proxySources,
   });
 });
+
+router.get('/images', successCache('1 day'), imageSourceController);
+router.get('/source', successCache('30 minutes'), videoSourceController);
+router.post(
+  '/upload/video',
+  validate(videoUploadValidation),
+  auth,
+  checkUploadPermission,
+  videoUploadController,
+);
+router.post(
+  '/upload/video/remote',
+  validate(videoRemoteUploadValidation),
+  auth,
+  checkUploadPermission,
+  videoRemoteUploadController,
+);
+router.post(
+  '/upload/episodes',
+  validate(uploadEpisodeValidation),
+  auth,
+  checkUploadPermission,
+  videoUploadController,
+);
 
 export default router;
