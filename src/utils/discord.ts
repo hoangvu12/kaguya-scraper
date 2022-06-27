@@ -16,7 +16,7 @@ type Result<T> = {
   updated: ResultData<T>;
 };
 
-type Attachment = {
+export type DiscordAttachment = {
   id: string;
   filename: string;
   size: number;
@@ -114,7 +114,7 @@ export const uploadFile = async <T extends Pick<UploadedFile, 'data' | 'name'>>(
 
   if (!data?.attachments?.length) throw new Error('No attachments found');
 
-  return data?.attachments as Attachment[];
+  return data?.attachments as DiscordAttachment[];
 };
 
 export const urlToFile = async (url: string) => {
