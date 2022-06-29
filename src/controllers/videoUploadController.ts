@@ -8,10 +8,10 @@ const videoUploadController = async (
   next: NextFunction,
 ) => {
   try {
-    const { video } = req.files;
+    const { file } = req.files;
     const { fileName } = req.body;
 
-    const willUploadVideo = Array.isArray(video) ? video[0] : video;
+    const willUploadVideo = Array.isArray(file) ? file[0] : file;
 
     if (fileName) {
       willUploadVideo.name = fileName;

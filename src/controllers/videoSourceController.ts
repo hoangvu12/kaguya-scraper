@@ -1,8 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import Api400Error from '../errors/api400Error';
-import Api404Error from '../errors/api404Error';
 import Api500Error from '../errors/api500Error';
-import { AnimeScraperId, getAnimeClassScraper } from '../scrapers';
+import {
+  AnimeScraperId,
+  getAnimeClassScraper,
+  getRemoteScraper,
+} from '../scrapers';
+
 
 const videoSourceController = async (
   req: Request,
@@ -16,10 +20,15 @@ const videoSourceController = async (
       throw new Api400Error('Missing required query parameters');
     }
 
-    const scraper = getAnimeClassScraper(source_id as AnimeScraperId);
+    const hasScraper = await getRemoteScraper(source_id as string);
 
+    if (!hasScraper) throw new Api400Error('Unknown source id');
+
+    let scraper = getAnimeClassScraper(source_id as AnimeScraperId)
+
+    // If there is no scraper in local but there is a scraper in database, That mean the request trying to get sources from custom scraper
     if (!scraper) {
-      throw new Api404Error('Source ID not found');
+      scraper = getAnimeClassScraper('custom');
     }
 
     const { sources, subtitles } = await scraper.getSources({

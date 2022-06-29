@@ -6,10 +6,8 @@ import { mergeAnimeConnection, mergeAnimeEpisode } from '../utils/data';
 
 type Body = {
   sourceId: string;
-  episode: {
-    name: string;
-    id: string;
-  };
+  episodeName: string;
+  episodeId: string;
 };
 
 const animeEpisodeController = async (
@@ -18,7 +16,7 @@ const animeEpisodeController = async (
   next: NextFunction,
 ) => {
   try {
-    const { sourceId, episode } = req.body as Body;
+    const { sourceId, episodeName, episodeId } = req.body as Body;
     const { mediaId } = req.params;
 
     const sourceMediaId = `${sourceId}-${mediaId}`;
@@ -30,10 +28,10 @@ const animeEpisodeController = async (
     });
 
     const episodeConnection = mergeAnimeEpisode({
-      name: episode.name,
+      name: episodeName,
       sourceId,
       sourceMediaId,
-      sourceEpisodeId: episode.id,
+      sourceEpisodeId: episodeId,
     });
 
     const { error: connectionError } = await supabase

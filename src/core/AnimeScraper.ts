@@ -15,6 +15,10 @@ export type Subtitle = {
   file: string;
 };
 
+export type Font = {
+  file: string;
+};
+
 export type VideoSource = {
   file: string;
   label?: string;
@@ -24,6 +28,7 @@ export type VideoSource = {
 export type AnimeSource = {
   sources: VideoSource[];
   subtitles?: Subtitle[];
+  fonts?: Font[];
 };
 
 export type GetSourcesQuery = {

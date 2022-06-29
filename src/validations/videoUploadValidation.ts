@@ -1,19 +1,6 @@
 import { UploadedFile } from 'express-fileupload';
 import { body } from 'express-validator';
-
-const supportedVideoExtensions = [
-  'ogm',
-  'wmv',
-  'mpg',
-  'webm',
-  'ogv',
-  'mov',
-  'asx',
-  'mpeg',
-  'mp4',
-  'm4v',
-  'avi',
-];
+import { supportedVideoExtensions } from '../utils';
 
 export const videoUploadValidation = [
   body('filename')

@@ -27,6 +27,7 @@ export default class Scraper {
   monitorInterval: number;
   monitorAxiosConfig: AxiosRequestConfig;
   disableMonitorRequest: boolean;
+  disableMonitor: boolean;
   proxy: Proxy;
   locales: string[];
 
@@ -44,6 +45,7 @@ export default class Scraper {
       ...axiosConfig,
     };
 
+    this.disableMonitor = false;
     this.monitorAxiosConfig = config;
     this.client = axios.create(config);
     this.baseURL = axiosConfig.baseURL;

@@ -1,19 +1,30 @@
 import apicache from 'apicache';
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
+
+import scrapers from './scrapers';
+
 import videoUploadController from './controllers/videoUploadController';
 import imageSourceController from './controllers/imageSourceController';
 import videoSourceController from './controllers/videoSourceController';
+import animeEpisodeController from './controllers/animeEpisodeController';
+import videoStatusController from './controllers/videoStatusController';
+import videoRemoteStatusController from './controllers/videoRemoteStatusController';
+import videoRemoteUploadController from './controllers/videoRemoteUploadController';
+import fileUploadController from './controllers/fileUploadController';
+
 import auth from './middlewares/auth';
 import checkUploadPermission from './middlewares/checkUploadPermission';
 import validate from './middlewares/validate';
-import scrapers from './scrapers';
-import videoRemoteUploadController from './controllers/videoRemoteUploadController';
-import fileUploadController from './controllers/fileUploadController';
+
 import { videoRemoteUploadValidation } from './validations/videoRemoteUploadValidation';
 import { videoUploadValidation } from './validations/videoUploadValidation';
 import { uploadEpisodeValidation } from './validations/uploadEpisodeValidation';
 import { fileUploadValidation } from './validations/fileUploadValidation';
+import { videoStatusValidation } from './validations/videoStatusValidation';
+import { videoRemoteStatusValidation } from './validations/videoRemoteStatusValidation';
+import fileProxyController from './controllers/fileProxyController';
+import { fileProxyValidation } from './validations/fileProxyValidation';
 
 const cache = apicache.middleware;
 
@@ -51,12 +62,28 @@ router.post(
   videoUploadController,
 );
 
+router.get(
+  '/upload/video/:fileId/status',
+  validate(videoStatusValidation),
+  auth,
+  checkUploadPermission,
+  videoStatusController,
+);
+
 router.post(
   '/upload/video/remote',
   validate(videoRemoteUploadValidation),
   auth,
   checkUploadPermission,
   videoRemoteUploadController,
+);
+
+router.get(
+  '/upload/video/remote/:remoteId/status',
+  validate(videoRemoteStatusValidation),
+  auth,
+  checkUploadPermission,
+  videoRemoteStatusController,
 );
 
 router.post(
@@ -72,7 +99,14 @@ router.post(
   validate(uploadEpisodeValidation),
   auth,
   checkUploadPermission,
-  videoUploadController,
+  animeEpisodeController,
+);
+
+router.get(
+  '/file/:id1/:id2/:filename',
+  successCache('1 day'),
+  validate(fileProxyValidation),
+  fileProxyController,
 );
 
 export default router;

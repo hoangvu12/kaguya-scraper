@@ -260,3 +260,17 @@ export const randomFilename = (extension: string) => {
   const random_number = timestamp + random;
   return random_number + '.' + extension;
 };
+
+export const supportedVideoExtensions = [
+  'ogm',
+  'wmv',
+  'mpg',
+  'webm',
+  'ogv',
+  'mov',
+  'asx',
+  'mpeg',
+  'mp4',
+  'm4v',
+  'avi',
+];

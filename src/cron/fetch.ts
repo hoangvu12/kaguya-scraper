@@ -66,11 +66,15 @@ export default async () => {
   for (const scraperId in animeScrapers) {
     const scraper = animeScrapers[scraperId];
 
+    if (scraper.disableMonitor) continue;
+
     handleRegisterMonitor(MediaType.Anime, scraper);
   }
 
   for (const scraperId in mangaScrapers) {
     const scraper = mangaScrapers[scraperId];
+
+    if (scraper.disableMonitor) continue;
 
     handleRegisterMonitor(MediaType.Manga, scraper);
   }
