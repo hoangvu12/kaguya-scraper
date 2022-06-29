@@ -5,10 +5,6 @@ import {
   uploadFile as discordUpload,
 } from '../utils/discord';
 
-interface UploadedFileWithCtx extends DiscordAttachment {
-  ctx?: any;
-}
-
 const fileUploadController = async (
   req: Request,
   res: Response,
@@ -22,7 +18,7 @@ const fileUploadController = async (
 
     if (!uploadedFiles?.length) throw new Api500Error('Files uploaded failed');
 
-    let modifiedFiles: UploadedFileWithCtx[] = uploadedFiles;
+    let modifiedFiles: DiscordAttachment[] = uploadedFiles;
 
     if (ctx) {
       const parsedCtx = JSON.parse(ctx);

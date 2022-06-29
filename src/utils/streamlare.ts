@@ -1,9 +1,15 @@
 import axios from 'axios';
 import { UploadedFile } from 'express-fileupload';
 import FormData from 'form-data';
-import { getFilenameFromUrl, randomArrayElement, randomFilename } from '.';
+import {
+  getFilenameFromUrl,
+  randomArrayElement,
+  randomFilename,
+  supportedVideoExtensions,
+} from '.';
+import { decode } from 'he';
 
-type FileResponse = {
+export type FileResponse = {
   hashid: string;
   folder?: any;
   name: string;
@@ -14,39 +20,41 @@ type FileResponse = {
   uploaded_at: Date;
 };
 
-type CreateUploadResponse = {
+export type FileInfo = {
+  hashid: string;
+  name: string;
+  size: number;
+  views: number;
+  poster: string;
+  status: string;
+  created_at: Date;
+};
+
+export type CreateUploadResponse = {
   status: string;
   message: string;
   result: string;
 };
 
-type CreateRemoteUploadResponse = {
+export type CreateRemoteUploadResponse = {
   status: string;
   message: string;
   result: string[];
 };
 
-type UploadResponse = {
+export type UploadResponse = {
   status: string;
   message: string;
   result: FileResponse;
 };
 
-type FileStatusResponse = {
+export type FileStatusResponse = {
   status: string;
   message: string;
-  result: {
-    hashid: string;
-    name: string;
-    size: number;
-    views: number;
-    poster: string;
-    status: string;
-    created_at: Date;
-  };
+  result: FileInfo;
 };
 
-type RemoteUploadResponse = {
+export type RemoteUploadResponse = {
   status: string;
   message: string;
   result: {
@@ -56,7 +64,7 @@ type RemoteUploadResponse = {
   };
 };
 
-type RemoteStatusResponse = {
+export type RemoteStatusResponse = {
   status: string;
   message: string;
   result: {
@@ -118,11 +126,27 @@ export const uploadFile = async (file: Pick<UploadedFile, 'data' | 'name'>) => {
   return response.result;
 };
 
-export const uploadByUrl = async (
-  url: string,
-  name = getFilenameFromUrl(url),
-) => {
+export const getRemoteStatus = async (remoteId: string) => {
+  const { data: remoteResponse } = await client.get<RemoteStatusResponse>(
+    '/remote/status',
+    {
+      params: {
+        id: remoteId,
+      },
+    },
+  );
+
+  return remoteResponse?.result;
+};
+
+export const uploadByUrl = async (url: string, name: string) => {
+  url = decode(url);
+
   if (!name) {
+    name = getFilenameFromUrl(url);
+  }
+
+  if (!name || !supportedVideoExtensions.some((ext) => name.endsWith(ext))) {
     name = randomFilename('mp4');
   }
 
@@ -146,19 +170,5 @@ export const uploadByUrl = async (
 
   if (!uploadResponse?.result) throw new Error('No upload result');
 
-  const { id: remoteId } = uploadResponse.result;
-
-  const { data: remoteResponse } = await client.get<RemoteStatusResponse>(
-    '/remote/status',
-    {
-      params: {
-        id: remoteId,
-      },
-    },
-  );
-
-  if (!remoteResponse?.result?.data?.fileId)
-    throw new Error('No remote result');
-
-  return getFile(remoteResponse.result.data.fileId);
+  return uploadResponse.result;
 };

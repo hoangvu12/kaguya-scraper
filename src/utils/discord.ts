@@ -23,6 +23,7 @@ export type DiscordAttachment = {
   url: string;
   proxy_url: string;
   content_type: string;
+  ctx: Record<string, any>;
 };
 
 const UPDATE_CHANNEL_ID = process.env.DISCORD_UPDATE_CHANNEL_ID;
@@ -114,7 +115,18 @@ export const uploadFile = async <T extends Pick<UploadedFile, 'data' | 'name'>>(
 
   if (!data?.attachments?.length) throw new Error('No attachments found');
 
-  return data?.attachments as DiscordAttachment[];
+  const attachments = (data.attachments as DiscordAttachment[]).map(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ({ proxy_url, ...attachment }) => ({
+      ...attachment,
+      url: attachment.url.replace(
+        'https://cdn.discordapp.com/attachments/',
+        '',
+      ),
+    }),
+  );
+
+  return attachments;
 };
 
 export const urlToFile = async (url: string) => {

@@ -1,11 +1,10 @@
-// import { User } from '@supabase/supabase-js';
 import { NextFunction, Request, Response } from 'express';
 import Api500Error from '../errors/api500Error';
 import { uploadByUrl as streamlareUpload } from '../utils/streamlare';
 
 type Body = {
   file: string;
-  fileName: string;
+  filename: string;
 };
 
 const videoRemoteUploadController = async (
@@ -14,15 +13,15 @@ const videoRemoteUploadController = async (
   next: NextFunction,
 ) => {
   try {
-    const { file, fileName } = req.body as Body;
+    const { file, filename } = req.body as Body;
 
-    const uploadedVideo = await streamlareUpload(file, fileName);
+    const remote = await streamlareUpload(file, filename);
 
-    if (!uploadedVideo?.hashid) throw new Api500Error('Video uploaded failed');
+    if (!remote.id) throw new Api500Error('Video uploaded failed');
 
     res.status(200).json({
       success: true,
-      video: uploadedVideo,
+      remote,
     });
   } catch (err) {
     next(err);

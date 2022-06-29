@@ -36,13 +36,9 @@ export const fileUploadValidation = [
     .isString()
     .withMessage('Context must be a json string')
     .custom((value) => {
-      console.log(value);
-
       try {
         JSON.parse(value);
       } catch (err) {
-        console.log('MAFATATA ERROR', err.message);
-
         throw new Error('Context must be a json string');
       }
 

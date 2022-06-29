@@ -8,12 +8,12 @@ export const uploadEpisodeValidation = [
     .withMessage('Source Id must be a string')
     .trim()
     .escape(),
-  body('episode.name')
+  body('episodeName')
     .isString()
     .withMessage('Episode name must be a string')
     .trim()
     .escape(),
-  body('episode.id')
+  body('episodeId')
     .isString()
     .withMessage('Episode id must be a string')
     .trim()

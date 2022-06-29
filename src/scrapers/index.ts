@@ -3,6 +3,7 @@ import { handlePath } from '../utils';
 import fs from 'fs';
 import AnimeScraper from '../core/AnimeScraper';
 import MangaScraper from '../core/MangaScraper';
+import supabase from '../lib/supabase';
 
 const readScrapers = (path: string) => {
   const scraperFiles = fs
@@ -52,6 +53,20 @@ const animeClassScrapers: Record<AnimeScraperId, typeof AnimeScraper> =
 const mangaClassScrapers: Record<MangaScraperId, typeof MangaScraper> =
   readClassScrapers('./scrapers/manga');
 
+export const getRemoteScraper = async (id: string) => {
+  const { data, error } = await supabase
+    .from('kaguya_sources')
+    .select('id')
+    .eq('id', id)
+    .single();
+
+  console.log(data, error);
+
+  if (!data || error) throw new Error(`Unknown scraper id: ${id}`);
+
+  return data;
+};
+
 export const getAnimeScraper = (id: AnimeScraperId) => {
   if (!(id in animeScrapers)) {
     throw new Error(`Unknown scraper id: ${id}`);
@@ -70,7 +85,7 @@ export const getMangaScraper = (id: MangaScraperId) => {
 
 export const getAnimeClassScraper = (id: AnimeScraperId) => {
   if (!(id in animeClassScrapers)) {
-    throw new Error(`Unknown scraper id: ${id}`);
+    return null;
   }
 
   // @ts-ignore
@@ -79,7 +94,7 @@ export const getAnimeClassScraper = (id: AnimeScraperId) => {
 
 export const getMangaClassScraper = (id: MangaScraperId) => {
   if (!(id in mangaClassScrapers)) {
-    throw new Error(`Unknown scraper id: ${id}`);
+    return null;
   }
 
   // @ts-ignore
