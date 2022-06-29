@@ -117,10 +117,14 @@ export const uploadFile = async <T extends Pick<UploadedFile, 'data' | 'name'>>(
 
   const attachments = (data.attachments as DiscordAttachment[]).map(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ({ proxy_url, ...attachment }) => ({
+    (attachment) => ({
       ...attachment,
       url: attachment.url.replace(
         'https://cdn.discordapp.com/attachments/',
+        '',
+      ),
+      proxy_url: attachment.proxy_url.replace(
+        'https://media.discordapp.net/attachments/',
         '',
       ),
     }),
