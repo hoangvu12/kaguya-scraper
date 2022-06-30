@@ -41,9 +41,10 @@ process.on('uncaughtException', (error) => {
   logError(new Error('uncaughtException'));
 });
 
+app.enable('trust proxy');
+
 app.use(express.json({ limit: '50mb' }));
 app.use(`/${process.env.BASE_ROUTE}`, routes);
-
 app.use(returnError);
 
 server.listen(PORT, () => {
