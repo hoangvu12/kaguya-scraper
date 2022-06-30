@@ -60,8 +60,6 @@ export const getRemoteScraper = async (id: string) => {
     .eq('id', id)
     .single();
 
-  console.log(data, error);
-
   if (!data || error) throw new Error(`Unknown scraper id: ${id}`);
 
   return data;

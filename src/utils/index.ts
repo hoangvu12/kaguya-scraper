@@ -274,3 +274,6 @@ export const supportedVideoExtensions = [
   'm4v',
   'avi',
 ];
+
+export const createAttachmentUrl = (baseUrl: string, attachmentUrl: string) =>
+  `${baseUrl}/file/${attachmentUrl}`;
