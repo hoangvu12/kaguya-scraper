@@ -16,6 +16,8 @@ const animeEpisodeController = async (
   next: NextFunction,
 ) => {
   try {
+    // @ts-ignore
+    const user = req.user as User;
     const { sourceId, episodeName, episodeId } = req.body as Body;
     const { mediaId } = req.params;
 
@@ -44,7 +46,7 @@ const animeEpisodeController = async (
 
     const { data: insertedEpisode, error: episodeError } = await supabase
       .from('kaguya_episodes')
-      .upsert(episodeConnection)
+      .upsert({ ...episodeConnection, userId: user.id })
       .single();
 
     if (episodeError) {
