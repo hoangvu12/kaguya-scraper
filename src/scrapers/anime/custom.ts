@@ -18,7 +18,7 @@ type Video = {
 // Custom scraper for user uploading
 export default class AnimeCustomScraper extends AnimeScraper {
   constructor() {
-    super('custom', 'Custom', { baseURL: '' });
+    super('custom', 'Custom', { baseURL: 'https://streamlare.com' });
 
     this.disableMonitor = true;
   }
