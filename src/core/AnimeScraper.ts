@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { AxiosRequestConfig } from 'axios';
+import { Request } from 'express';
 import { MediaType } from '../types/anilist';
 import { Anime, SourceAnime } from '../types/data';
 import { RequireAtLeastOne } from '../types/utils';
@@ -35,7 +36,9 @@ export type GetSourcesQuery = {
   source_id: string;
   source_media_id: string;
   episode_id: string;
+  request: Request;
 };
+
 export default class AnimeScraper extends Scraper {
   type: MediaType.Anime;
   monitorURL: string;

@@ -28,6 +28,7 @@ const imageSourceController = async (
       source_id: source_id.toString(),
       source_media_id: source_media_id.toString(),
       chapter_id: chapter_id.toString(),
+      request: req,
     });
 
     if (!images) {

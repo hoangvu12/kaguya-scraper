@@ -35,6 +35,7 @@ const videoSourceController = async (
       source_id: source_id.toString(),
       source_media_id: source_media_id.toString(),
       episode_id: episode_id.toString(),
+      request: req
     });
 
     if (!sources) {

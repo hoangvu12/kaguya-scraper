@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { AxiosRequestConfig } from 'axios';
+import { Request } from 'express';
 import { MediaType } from '../types/anilist';
 import { Manga, SourceManga } from '../types/data';
 import { RequireAtLeastOne } from '../types/utils';
@@ -18,6 +19,7 @@ export type GetImagesQuery = {
   source_id: string;
   source_media_id: string;
   chapter_id: string;
+  request: Request;
 };
 
 export default class MangaScraper extends Scraper {
