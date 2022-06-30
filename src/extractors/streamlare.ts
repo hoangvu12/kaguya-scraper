@@ -26,14 +26,16 @@ const streamlareExtractor = async (file_code: string) => {
 
   if (!data?.result) return [];
 
-  return Object.keys(data.result).map((key) => {
-    const result = data.result[key];
+  return Object.keys(data.result)
+    .reverse()
+    .map((key) => {
+      const result = data.result[key];
 
-    return {
-      ...result,
-      file: `https://corsproxy.io/?${encodeURIComponent(result.file)}`,
-    };
-  });
+      return {
+        ...result,
+        file: `https://corsproxy.io/?${encodeURIComponent(result.file)}`,
+      };
+    });
 };
 
 export default streamlareExtractor;
