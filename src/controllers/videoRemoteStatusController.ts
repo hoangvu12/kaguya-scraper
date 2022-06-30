@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import Api500Error from '../errors/api500Error';
-import { getRemoteStatus } from '../utils/streamlare';
+import { getRemoteStatus } from '../utils/streamtape';
 
 const videoRemoteStatusController = async (
   req: Request,

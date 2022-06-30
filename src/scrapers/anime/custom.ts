@@ -2,11 +2,11 @@ import AnimeScraper, {
   AnimeSource,
   GetSourcesQuery,
 } from '../../core/AnimeScraper';
-import streamlareExtractor from '../../extractors/streamlare';
+import streamtapeExtractor from '../../extractors/streamtape';
 import supabase from '../../lib/supabase';
 import { createAttachmentUrl } from '../../utils';
 import { DiscordAttachment } from '../../utils/discord';
-import { FileInfo, FileResponse } from '../../utils/streamlare';
+import { FileInfo, FileResponse } from '../../utils/streamtape';
 
 type Video = {
   video: FileResponse | FileInfo;
@@ -36,7 +36,7 @@ export default class AnimeCustomScraper extends AnimeScraper {
       .eq('episodeId', `${source_id}-${episode_id}`)
       .single();
 
-    if (!data?.video?.hashid || error) {
+    if (!data?.video?.id || error) {
       return {
         sources: [],
         subtitles: [],
@@ -44,10 +44,10 @@ export default class AnimeCustomScraper extends AnimeScraper {
       };
     }
 
-    const sources = await streamlareExtractor(data.video.hashid);
+    const source = await streamtapeExtractor(data.video.id);
 
     return {
-      sources: sources.map((source) => ({ ...source, useProxy: true })),
+      sources: [{ file: source, useProxy: true }],
       subtitles: data.subtitles.map((subtitle) => ({
         file: createAttachmentUrl(BASE_URL, subtitle.url),
         lang: subtitle.ctx.locale || 'vi',
