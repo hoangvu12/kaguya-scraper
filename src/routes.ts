@@ -59,7 +59,7 @@ router.get('/proxy/sources', async (_, res) => {
 
   res.json({
     success: true,
-    sources: { ...proxySources, ...customProxySources },
+    sources: [...proxySources, ...customProxySources],
   });
 });
 
