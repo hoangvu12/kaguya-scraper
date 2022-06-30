@@ -47,7 +47,7 @@ export default class AnimeCustomScraper extends AnimeScraper {
     const sources = await streamlareExtractor(data.video.hashid);
 
     return {
-      sources,
+      sources: sources.map((source) => ({ ...source, useProxy: true })),
       subtitles: data.subtitles.map((subtitle) => ({
         file: createAttachmentUrl(BASE_URL, subtitle.url),
         lang: subtitle.ctx.locale || 'vi',

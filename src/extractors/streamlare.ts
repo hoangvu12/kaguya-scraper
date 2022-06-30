@@ -20,22 +20,13 @@ export interface StreamlareResponse {
 
 const streamlareExtractor = async (file_code: string) => {
   const { data } = await axios.post<StreamlareResponse>(
-    'https://corsproxy.io/?https%3A%2F%2Fslwatch.co%2Fapi%2Fvideo%2Fstream%2Fget',
+    'https://slwatch.co/api/video/stream/get',
     { id: file_code },
   );
 
   if (!data?.result) return [];
 
-  return Object.keys(data.result)
-    .reverse()
-    .map((key) => {
-      const result = data.result[key];
-
-      return {
-        ...result,
-        file: `https://corsproxy.io/?${encodeURIComponent(result.file)}`,
-      };
-    });
+  return Object.keys(data.result).map((key) => data.result[key]);
 };
 
 export default streamlareExtractor;
