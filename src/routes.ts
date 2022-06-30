@@ -25,6 +25,8 @@ import { videoStatusValidation } from './validations/videoStatusValidation';
 import { videoRemoteStatusValidation } from './validations/videoRemoteStatusValidation';
 import fileProxyController from './controllers/fileProxyController';
 import { fileProxyValidation } from './validations/fileProxyValidation';
+import supabase from './lib/supabase';
+import { Source } from './types/data';
 
 const cache = apicache.middleware;
 
@@ -37,17 +39,27 @@ router.get('/', (_, res) => {
   res.send('Working yo');
 });
 
-router.get('/proxy/sources', (_, res) => {
+router.get('/proxy/sources', async (_, res) => {
   const allScrapers = { ...scrapers.anime, ...scrapers.manga };
+
+  const { data: customSources = [] } = await supabase
+    .from<Source>('kaguya_sources')
+    .select('id')
+    .eq('isCustomSource', true);
 
   const proxySources = Object.entries(allScrapers).map(([key, value]) => ({
     headers: value.proxy.headers,
     id: key,
   }));
 
+  const customProxySources = customSources.map((source) => ({
+    headers: allScrapers.custom.proxy.headers,
+    id: source.id,
+  }));
+
   res.json({
     success: true,
-    sources: proxySources,
+    sources: { ...proxySources, ...customProxySources },
   });
 });
 

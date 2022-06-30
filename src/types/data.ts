@@ -51,7 +51,9 @@ export interface SourceMediaConnection {
 export interface Source {
   id: string;
   name: string;
+  isCustomSource: boolean;
 }
+
 export interface Anime {
   anilistId: number;
   episodes: Episode[];
