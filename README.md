@@ -44,9 +44,9 @@ DISCORD_TOKEN=
 # Discord storage
 DISCORD_WEBHOOK_URL=
 
-# Streamlare
-STREAMLARE_LOGIN=
-STREAMLARE_API_KEY=
+# Streamtape
+STREAMTAPE_LOGIN=
+STREAMTAPE_API_KEY=
 ```
 
 ## How it works?
