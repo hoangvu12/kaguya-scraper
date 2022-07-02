@@ -25,6 +25,8 @@ import { videoRemoteStatusValidation } from './validations/videoRemoteStatusVali
 import { videoRemoteUploadValidation } from './validations/videoRemoteUploadValidation';
 import { videoStatusValidation } from './validations/videoStatusValidation';
 import { videoUploadValidation } from './validations/videoUploadValidation';
+import mangaChapterController from './controllers/mangaChapterController';
+import { uploadChapterValidation } from './validations/uploadChapterValidation';
 
 const cache = apicache.middleware;
 
@@ -100,6 +102,14 @@ router.post(
   auth,
   checkUploadPermission,
   animeEpisodeController,
+);
+
+router.post(
+  '/upload/chapters/:mediaId',
+  validate(uploadChapterValidation),
+  auth,
+  checkUploadPermission,
+  mangaChapterController,
 );
 
 router.get(

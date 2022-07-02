@@ -48,8 +48,6 @@ const fileUploadController = async (
       files: modifiedFiles,
     });
   } catch (err) {
-    console.log(err.response.data);
-
     next(err);
   }
 };
