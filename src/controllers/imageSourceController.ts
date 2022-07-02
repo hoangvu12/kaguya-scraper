@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import Api400Error from '../errors/api400Error';
 import Api404Error from '../errors/api404Error';
 import Api500Error from '../errors/api500Error';
-import scrapers, { MangaScraperId } from '../scrapers';
+import { getMangaClassScraper, getRemoteScraper } from '../scrapers';
 
 const imageSourceController = async (
   req: Request,
@@ -16,9 +16,16 @@ const imageSourceController = async (
       throw new Api400Error('Missing required query parameters');
     }
 
-    const animeScrapers = scrapers.manga;
+    const hasScraper = await getRemoteScraper(source_id as string);
 
-    const scraper = animeScrapers[source_id as MangaScraperId];
+    if (!hasScraper) throw new Api400Error('Unknown source id');
+
+    let scraper = getMangaClassScraper(source_id as string);
+
+    // If there is no scraper in local but there is a scraper in database, That mean the request trying to get sources from custom scraper
+    if (!scraper) {
+      scraper = getMangaClassScraper('custom');
+    }
 
     if (!scraper) {
       throw new Api404Error('Source ID not found');
