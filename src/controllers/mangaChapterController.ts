@@ -2,7 +2,7 @@
 import { NextFunction, Request, Response } from 'express';
 import Api500Error from '../errors/api500Error';
 import supabase from '../lib/supabase';
-import { mergeAnimeConnection, mergeMangaChapter } from '../utils/data';
+import { mergeMangaConnection, mergeMangaChapter } from '../utils/data';
 
 type Body = {
   sourceId: string;
@@ -23,7 +23,7 @@ const mangaChapterController = async (
 
     const sourceMediaId = `${sourceId}-${mediaId}`;
 
-    const connection = mergeAnimeConnection({
+    const connection = mergeMangaConnection({
       mediaId: Number(mediaId),
       sourceId,
       sourceMediaId,
