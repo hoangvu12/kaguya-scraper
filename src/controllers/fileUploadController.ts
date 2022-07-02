@@ -4,6 +4,7 @@ import {
   DiscordAttachment,
   uploadFile as discordUpload,
 } from '../utils/discord';
+import chunk from 'lodash/chunk';
 
 const fileUploadController = async (
   req: Request,
@@ -14,7 +15,13 @@ const fileUploadController = async (
     const { file } = req.files;
     const { ctx } = req.body;
 
-    const uploadedFiles = await discordUpload(file);
+    const chunkedFiles = chunk(Array.isArray(file) ? file : [file], 10);
+
+    const chunkUploadedFiles = await Promise.all<DiscordAttachment[]>(
+      chunkedFiles.map((files) => discordUpload(files)),
+    );
+
+    const uploadedFiles = chunkUploadedFiles.flat();
 
     if (!uploadedFiles?.length) throw new Api500Error('Files uploaded failed');
 
@@ -41,6 +48,8 @@ const fileUploadController = async (
       files: modifiedFiles,
     });
   } catch (err) {
+    console.log(err.response.data);
+
     next(err);
   }
 };
