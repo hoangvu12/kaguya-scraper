@@ -10,7 +10,7 @@ import { Chapter, SourceManga, SourceMediaConnection } from '../types/data';
 import { getMediaList, getRetriesId } from '../utils/anilist';
 import { mergeMangaInfo } from '../utils/data';
 import { handleLog } from '../utils/discord';
-import { handlePushNotification } from '../utils/notification';
+import { handleMangaNotification } from '../utils/notification';
 
 interface SourceMediaConnectionWithMedia extends SourceMediaConnection {
   chapters: Chapter[];
@@ -152,7 +152,7 @@ export const scrapeNewManga = async (scraperId: MangaScraperId) => {
       if (isSuccess) {
         result.updated = mangaWithNewChapters;
 
-        await handlePushNotification(mangaWithNewChapters, MediaType.Manga);
+        await handleMangaNotification(mangaWithNewChapters);
       }
     }
 

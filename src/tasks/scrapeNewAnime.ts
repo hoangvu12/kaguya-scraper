@@ -9,7 +9,6 @@ import { Episode, SourceAnime, SourceMediaConnection } from '../types/data';
 import { getMediaList, getRetriesId } from '../utils/anilist';
 import { mergeAnimeInfo } from '../utils/data';
 import { handleLog } from '../utils/discord';
-import { handlePushNotification } from '../utils/notification';
 
 interface SourceMediaConnectionWithMedia extends SourceMediaConnection {
   episodes: Episode[];
@@ -150,8 +149,6 @@ export const scrapeNewAnime = async (scraperId: AnimeScraperId) => {
 
       if (isSuccess) {
         result.updated = animeWithNewEpisodes;
-
-        await handlePushNotification(animeWithNewEpisodes, MediaType.Anime);
       }
     }
 

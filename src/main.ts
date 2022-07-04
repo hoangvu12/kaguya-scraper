@@ -8,6 +8,7 @@ import routes from './routes';
 import http from 'http';
 import { Server } from 'socket.io';
 import handleSocket from './socket';
+import { handleAnimeNotification } from './utils/notification';
 
 const app = express();
 const server = http.createServer(app);
@@ -34,6 +35,7 @@ Client.on('ready', (bot) => {
   fetchCron();
 });
 
+handleAnimeNotification();
 handleSocket(io);
 
 process.on('uncaughtException', (error) => {
