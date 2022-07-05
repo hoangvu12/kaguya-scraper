@@ -14,6 +14,13 @@ query ($id: Int, $search: String, $type: MediaType) {
     status_not: NOT_YET_RELEASED
   ) {
     id
+    synonyms
+    title {
+      romaji
+      english
+      native
+      userPreferred
+    }
   }
 }
 `;
@@ -287,7 +294,7 @@ export const getMediaList = async (ids: number[], type: MediaType) => {
 
     return list;
   } catch (err) {
-    console.log(err);
+    console.log(err.message);
   }
 };
 
