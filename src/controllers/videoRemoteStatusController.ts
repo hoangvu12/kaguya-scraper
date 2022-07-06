@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import Api500Error from '../errors/api500Error';
-import { getRemoteStatus } from '../utils/streamtape';
+import { getHosting } from '../hostings';
 
 const videoRemoteStatusController = async (
   req: Request,
@@ -8,9 +8,11 @@ const videoRemoteStatusController = async (
   next: NextFunction,
 ) => {
   try {
-    const { remoteId } = req.params;
+    const { remoteId, hostingId } = req.params;
 
-    const remote = await getRemoteStatus(remoteId);
+    const hosting = getHosting(hostingId);
+
+    const remote = await hosting.getRemoteStatus(remoteId);
 
     if (!remote) throw new Api500Error('Remote not found');
 

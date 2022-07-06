@@ -2,17 +2,18 @@ import AnimeScraper, {
   AnimeSource,
   GetSourcesQuery,
 } from '../../core/AnimeScraper';
-import streamtapeExtractor from '../../extractors/streamtape';
+import { FileStatus } from '../../core/VideoHosting';
+import { getHosting } from '../../hostings';
 import supabase from '../../lib/supabase';
 import { createAttachmentUrl } from '../../utils';
 import { DiscordAttachment } from '../../utils/discord';
-import { FileInfo, FileResponse } from '../../utils/streamtape';
 
 type Video = {
-  video: FileResponse | FileInfo;
+  video: FileStatus;
   subtitles: DiscordAttachment[];
   fonts: DiscordAttachment[];
   episodeId: string;
+  hostingId: string;
 };
 
 // Custom scraper for user uploading
@@ -32,7 +33,7 @@ export default class AnimeCustomScraper extends AnimeScraper {
 
     const { data, error } = await supabase
       .from<Video>('kaguya_videos')
-      .select('video, subtitles, fonts')
+      .select('video, subtitles, fonts, hostingId')
       .eq('episodeId', `${source_id}-${episode_id}`)
       .single();
 
@@ -44,10 +45,12 @@ export default class AnimeCustomScraper extends AnimeScraper {
       };
     }
 
-    const source = await streamtapeExtractor(data.video.id);
+    const hosting = getHosting(data.hostingId);
+
+    const sources = await hosting.getStreamingUrl(data.video.id);
 
     return {
-      sources: [{ file: source, useProxy: true }],
+      sources,
       subtitles: data.subtitles.map((subtitle) => ({
         file: createAttachmentUrl(BASE_URL, subtitle.url),
         lang: subtitle.ctx.locale || 'vi',

@@ -1,5 +1,5 @@
 import { UploadedFile } from 'express-fileupload';
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 import { supportedVideoExtensions } from '../utils';
 
 export const videoUploadValidation = [
@@ -26,4 +26,5 @@ export const videoUploadValidation = [
 
       return true;
     }),
+  param('hostingId').exists().withMessage('Hosting id must be provided'),
 ];

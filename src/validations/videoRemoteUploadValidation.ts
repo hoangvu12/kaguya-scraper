@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 
 export const videoRemoteUploadValidation = [
   body('file')
@@ -14,4 +14,5 @@ export const videoRemoteUploadValidation = [
     .withMessage('Video file name must be a string')
     .trim()
     .escape(),
+  param('hostingId').exists().withMessage('Hosting id must be provided'),
 ];

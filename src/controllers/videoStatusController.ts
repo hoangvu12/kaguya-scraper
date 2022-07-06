@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import Api500Error from '../errors/api500Error';
-import { getFile } from '../utils/streamtape';
+import { getHosting } from '../hostings';
 
 const videoStatusController = async (
   req: Request,
@@ -8,9 +8,11 @@ const videoStatusController = async (
   next: NextFunction,
 ) => {
   try {
-    const { fileId } = req.params;
+    const { fileId, hostingId } = req.params;
 
-    const videoFile = await getFile(fileId);
+    const hosting = getHosting(hostingId);
+
+    const videoFile = await hosting.getFileStatus(fileId);
 
     if (!videoFile) throw new Api500Error('Video not found');
 

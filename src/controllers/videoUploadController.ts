@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import Api500Error from '../errors/api500Error';
-import { uploadFile as streamtapeUpload } from '../utils/streamtape';
+import { getHosting } from '../hostings';
 
 const videoUploadController = async (
   req: Request,
@@ -10,6 +10,9 @@ const videoUploadController = async (
   try {
     const { file } = req.files;
     const { fileName } = req.body;
+    const { hostingId } = req.params;
+
+    const hosting = getHosting(hostingId);
 
     const willUploadVideo = Array.isArray(file) ? file[0] : file;
 
@@ -17,13 +20,13 @@ const videoUploadController = async (
       willUploadVideo.name = fileName;
     }
 
-    const uploadedVideo = await streamtapeUpload(willUploadVideo);
+    const videoId = await hosting.uploadFile(willUploadVideo);
 
-    if (!uploadedVideo?.id) throw new Api500Error('Video uploaded failed');
+    if (!videoId) throw new Api500Error('Video uploaded failed');
 
     res.status(200).json({
       success: true,
-      video: uploadedVideo,
+      videoId,
     });
   } catch (err) {
     next(err);

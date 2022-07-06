@@ -57,7 +57,7 @@ router.get('/images', successCache('1 day'), imageSourceController);
 router.get('/source', successCache('30 minutes'), videoSourceController);
 
 router.post(
-  '/upload/video',
+  '/upload/video/:hostingId',
   validate(videoUploadValidation),
   auth,
   checkUploadPermission,
@@ -65,7 +65,7 @@ router.post(
 );
 
 router.get(
-  '/upload/video/:fileId/status',
+  '/upload/video/:hostingId/:fileId/status',
   validate(videoStatusValidation),
   auth,
   checkUploadPermission,
@@ -73,7 +73,7 @@ router.get(
 );
 
 router.post(
-  '/upload/video/remote',
+  '/upload/video/:hostingId/remote',
   validate(videoRemoteUploadValidation),
   auth,
   checkUploadPermission,
@@ -81,7 +81,7 @@ router.post(
 );
 
 router.get(
-  '/upload/video/remote/:remoteId/status',
+  '/upload/video/:hostingId/remote/:remoteId/status',
   validate(videoRemoteStatusValidation),
   auth,
   checkUploadPermission,
