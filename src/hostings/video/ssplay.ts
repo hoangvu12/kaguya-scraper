@@ -133,8 +133,6 @@ export default class SSPlayHosting extends VideoHosting {
   }
 
   async getStreamingUrl(fileId: string): Promise<VideoSource[]> {
-    console.log(fileId);
-
     try {
       const { data } = await axios.get(`https://ssplay.net/v/${fileId}.html`);
 
