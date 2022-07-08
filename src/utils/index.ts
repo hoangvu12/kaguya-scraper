@@ -2,6 +2,8 @@ import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import fs from 'fs';
 import pick from 'lodash/pick';
 import path from 'path';
+import { VideoSource } from '../core/AnimeScraper';
+import { ImageSource } from '../core/MangaScraper';
 import { MediaUnit } from '../types/data';
 
 export const pickArrayOfObject = <T, K extends keyof T>(data: T[], keys: K[]) =>
@@ -286,4 +288,37 @@ export const removeArrayOfObjectDup = <T extends object, K extends keyof T>(
     (obj, index, self) =>
       index === self.findIndex((t) => t[property] === obj[property]),
   );
+};
+
+// Convert 5GB to 5000000000
+export const convertSizeToBytes = (size: string) => {
+  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const sizeInBytes = size.split(' ')[0];
+  const unit = size.split(' ')[1];
+
+  if (unit === 'B') return +sizeInBytes;
+
+  const index = units.indexOf(unit);
+
+  if (index === -1) return 0;
+
+  return +sizeInBytes * Math.pow(1024, index);
+};
+
+export const handleProxy = <T extends VideoSource | ImageSource>(
+  sources: T[],
+): T[] => {
+  const sourcesWithProxy = sources.map((source: VideoSource | ImageSource) => {
+    if (source.proxy) return source;
+
+    source.proxy = {
+      redirectWithProxy: true,
+      followRedirect: true,
+    };
+
+    return source;
+  });
+
+  // @ts-ignore
+  return sourcesWithProxy;
 };

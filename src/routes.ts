@@ -2,8 +2,6 @@ import apicache from 'apicache';
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
 
-import scrapers from './scrapers';
-
 import animeEpisodeController from './controllers/animeEpisodeController';
 import fileUploadController from './controllers/fileUploadController';
 import imageSourceController from './controllers/imageSourceController';
@@ -18,15 +16,15 @@ import checkUploadPermission from './middlewares/checkUploadPermission';
 import validate from './middlewares/validate';
 
 import fileProxyController from './controllers/fileProxyController';
+import mangaChapterController from './controllers/mangaChapterController';
 import { fileProxyValidation } from './validations/fileProxyValidation';
 import { fileUploadValidation } from './validations/fileUploadValidation';
+import { uploadChapterValidation } from './validations/uploadChapterValidation';
 import { uploadEpisodeValidation } from './validations/uploadEpisodeValidation';
 import { videoRemoteStatusValidation } from './validations/videoRemoteStatusValidation';
 import { videoRemoteUploadValidation } from './validations/videoRemoteUploadValidation';
 import { videoStatusValidation } from './validations/videoStatusValidation';
 import { videoUploadValidation } from './validations/videoUploadValidation';
-import mangaChapterController from './controllers/mangaChapterController';
-import { uploadChapterValidation } from './validations/uploadChapterValidation';
 
 const cache = apicache.middleware;
 
@@ -37,20 +35,6 @@ const router = express.Router();
 
 router.get('/', (_, res) => {
   res.send('Working yo');
-});
-
-router.get('/proxy/sources', async (_, res) => {
-  const allScrapers = { ...scrapers.anime, ...scrapers.manga };
-
-  const proxySources = Object.entries(allScrapers).map(([key, value]) => ({
-    headers: value.proxy.headers,
-    id: key,
-  }));
-
-  res.json({
-    success: true,
-    sources: proxySources,
-  });
 });
 
 router.get('/images', successCache('1 day'), imageSourceController);

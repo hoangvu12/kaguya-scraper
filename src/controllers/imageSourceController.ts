@@ -3,6 +3,7 @@ import Api400Error from '../errors/api400Error';
 import Api404Error from '../errors/api404Error';
 import Api500Error from '../errors/api500Error';
 import { getMangaClassScraper, getRemoteScraper } from '../scrapers';
+import { handleProxy } from '../utils';
 
 const imageSourceController = async (
   req: Request,
@@ -38,13 +39,15 @@ const imageSourceController = async (
       request: req,
     });
 
-    if (!images) {
+    const imagesWithProxy = handleProxy(images);
+
+    if (!imagesWithProxy) {
       throw new Api500Error('No images found');
     }
 
     res.status(200).json({
       success: true,
-      images,
+      images: imagesWithProxy,
     });
   } catch (err) {
     next(err);

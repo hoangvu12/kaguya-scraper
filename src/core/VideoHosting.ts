@@ -3,7 +3,7 @@ import { UploadedFile } from 'express-fileupload';
 import { VideoSource } from './AnimeScraper';
 
 export interface FileStatus {
-  id: string | number;
+  id?: string | number;
   size: number;
   name: string;
   converted: boolean;
@@ -11,7 +11,7 @@ export interface FileStatus {
 }
 
 export interface RemoteStatus {
-  id: string | number;
+  id?: string | number;
   progress?: number;
   fileId: string | number;
 }

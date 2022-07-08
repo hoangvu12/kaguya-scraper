@@ -9,7 +9,18 @@ import logger from '../logger';
 import { SourceAnime, SourceManga } from '../types/data';
 import { RequireAtLeastOne } from '../types/utils';
 import { isValidUrl, isVietnamese } from '../utils';
-import Proxy from './Proxy';
+
+export interface Proxy {
+  ignoreReqHeaders?: boolean;
+  followRedirect?: boolean;
+  redirectWithProxy?: boolean;
+  decompress?: boolean;
+  appendReqHeaders?: Record<string, string>;
+  appendResHeaders?: Record<string, string>;
+  deleteReqHeaders?: string[];
+  deleteResHeaders?: string[];
+}
+
 interface Server {
   name: string;
 }
@@ -54,10 +65,6 @@ export default class Scraper {
     this.disableMonitorRequest = false;
     this.id = id;
     this.name = name;
-    this.proxy = new Proxy({
-      referer: axiosConfig.baseURL,
-      origin: axiosConfig.baseURL,
-    });
     this.blacklistTitles = ['live action'];
 
     axiosRetry(this.client, { retries: 3 });

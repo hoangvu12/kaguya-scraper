@@ -8,11 +8,12 @@ import { RequireAtLeastOne } from '../types/utils';
 import { readFile, writeFile } from '../utils';
 import { getRetriesId } from '../utils/anilist';
 import { mergeMangaInfo } from '../utils/data';
-import Scraper from './Scraper';
+import Scraper, { Proxy } from './Scraper';
 
 export type ImageSource = {
   image: string;
   useProxy?: boolean;
+  proxy?: Proxy;
 };
 
 export type GetImagesQuery = {

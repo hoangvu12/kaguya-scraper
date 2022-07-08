@@ -8,7 +8,7 @@ import { RequireAtLeastOne } from '../types/utils';
 import { readFile, writeFile } from '../utils';
 import { getRetriesId } from '../utils/anilist';
 import { mergeAnimeInfo } from '../utils/data';
-import Scraper from './Scraper';
+import Scraper, { Proxy } from './Scraper';
 
 export type Subtitle = {
   language: string;
@@ -24,6 +24,7 @@ export type VideoSource = {
   file: string;
   label?: string;
   useProxy?: boolean;
+  proxy?: Proxy;
 };
 
 export type AnimeSource = {

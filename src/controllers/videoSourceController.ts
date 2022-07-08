@@ -6,7 +6,7 @@ import {
   getAnimeClassScraper,
   getRemoteScraper,
 } from '../scrapers';
-
+import { handleProxy } from '../utils';
 
 const videoSourceController = async (
   req: Request,
@@ -24,7 +24,7 @@ const videoSourceController = async (
 
     if (!hasScraper) throw new Api400Error('Unknown source id');
 
-    let scraper = getAnimeClassScraper(source_id as AnimeScraperId)
+    let scraper = getAnimeClassScraper(source_id as AnimeScraperId);
 
     // If there is no scraper in local but there is a scraper in database, That mean the request trying to get sources from custom scraper
     if (!scraper) {
@@ -35,8 +35,10 @@ const videoSourceController = async (
       source_id: source_id.toString(),
       source_media_id: source_media_id.toString(),
       episode_id: episode_id.toString(),
-      request: req
+      request: req,
     });
+
+    const sourcesWithProxy = handleProxy(sources);
 
     if (!sources) {
       throw new Api500Error('No sources found');
@@ -44,7 +46,7 @@ const videoSourceController = async (
 
     res.status(200).json({
       success: true,
-      sources,
+      sources: sourcesWithProxy,
       subtitles,
     });
   } catch (err) {
