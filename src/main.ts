@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import fileUpload from 'express-fileupload';
-import fetchCron from './cron/fetch';
+// import fetchCron from './cron/fetch';
 import { logError, returnError } from './errors/errorHandler';
-import { Client } from './lib/Discord';
+// import { Client } from './lib/Discord';
 import routes from './routes';
 import http from 'http';
 import { Server } from 'socket.io';
@@ -29,11 +29,11 @@ app.use(fileUpload());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
-Client.on('ready', (bot) => {
-  console.log(`Bot ${bot.user.tag} is ready!`);
+// Client.on('ready', (bot) => {
+//   console.log(`Bot ${bot.user.tag} is ready!`);
 
-  fetchCron();
-});
+//   fetchCron();
+// });
 
 handleAnimeNotification();
 handleSocket(io);

@@ -21,14 +21,15 @@ const readHostings = (path: string) => {
   return hostings;
 };
 
-const hostings: Record<string, VideoHosting> = readHostings('./hostings');
+const videoHostings: Record<string, VideoHosting> =
+  readHostings('./hostings/video');
 
-export const getHosting = (id: string): VideoHosting => {
-  if (!(id in hostings)) {
+export const getVideoHosting = (id: string): VideoHosting => {
+  if (!(id in videoHostings)) {
     throw new Error(`Unknown hosting id: ${id}`);
   }
 
-  return hostings[id];
+  return videoHostings[id];
 };
 
-export default hostings;
+export default videoHostings;

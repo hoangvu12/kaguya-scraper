@@ -1,15 +1,17 @@
 import axios, { AxiosInstance } from 'axios';
 import { UploadedFile } from 'express-fileupload';
 import FormData from 'form-data';
-import { decode } from 'he';
-import { VideoSource } from '../core/AnimeScraper';
-import VideoHosting, { FileStatus, RemoteStatus } from '../core/VideoHosting';
-import streamtapeExtractor from '../extractors/streamtape';
+import { VideoSource } from '../../core/AnimeScraper';
+import VideoHosting, {
+  FileStatus,
+  RemoteStatus,
+} from '../../core/VideoHosting';
+import streamtapeExtractor from '../../extractors/streamtape';
 import {
   getFilenameFromUrl,
   randomFilename,
   supportedVideoExtensions,
-} from '../utils';
+} from '../../utils';
 
 export type FileResponse = {
   url: string;
@@ -140,12 +142,11 @@ export default class StreamtapeHosting extends VideoHosting {
       id: status.id,
       name: status.name,
       size: status.size,
+      thumbnail: status.thumb,
     };
   }
 
   async uploadRemoteFile(url: string, name?: string): Promise<string | number> {
-    url = decode(url);
-
     if (!name) {
       name = getFilenameFromUrl(url);
     }
@@ -175,12 +176,17 @@ export default class StreamtapeHosting extends VideoHosting {
         },
       });
 
-    const status = remoteResponse?.result[remoteId];
+    const remoteStatus = remoteResponse?.result[remoteId];
 
     return {
-      fileId: status.extid,
-      id: status.id,
-      progress: (status.bytes_loaded / status.bytes_total) * 100,
+      fileId: remoteStatus.extid,
+      id: remoteStatus.id,
+      progress:
+        (remoteStatus?.bytes_loaded / remoteStatus?.bytes_total) * 100 || 0,
+      downloaded: remoteStatus?.status === 'finished',
+      error:
+        remoteStatus?.status !== 'downloading' &&
+        remoteStatus?.status !== 'new',
     };
   }
 

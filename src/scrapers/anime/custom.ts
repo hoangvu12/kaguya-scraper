@@ -3,7 +3,7 @@ import AnimeScraper, {
   GetSourcesQuery,
 } from '../../core/AnimeScraper';
 import { FileStatus } from '../../core/VideoHosting';
-import { getHosting } from '../../hostings';
+import { getVideoHosting } from '../../hostings';
 import supabase from '../../lib/supabase';
 import { createAttachmentUrl } from '../../utils';
 import { DiscordAttachment } from '../../utils/discord';
@@ -19,7 +19,7 @@ type Video = {
 // Custom scraper for user uploading
 export default class AnimeCustomScraper extends AnimeScraper {
   constructor() {
-    super('custom', 'Custom', { baseURL: 'https://streamlare.com' });
+    super('custom', 'Custom', { baseURL: '' });
 
     this.disableMonitor = true;
   }
@@ -45,18 +45,21 @@ export default class AnimeCustomScraper extends AnimeScraper {
       };
     }
 
-    const hosting = getHosting(data.hostingId);
+    const hosting = getVideoHosting(data.hostingId);
 
     const sources = await hosting.getStreamingUrl(data.video.id);
 
+    const subtitles = data.subtitles || [];
+    const fonts = data.fonts || [];
+
     return {
       sources,
-      subtitles: data.subtitles.map((subtitle) => ({
+      subtitles: subtitles.map((subtitle) => ({
         file: createAttachmentUrl(BASE_URL, subtitle.url),
         lang: subtitle.ctx.locale || 'vi',
         language: subtitle.ctx.name || subtitle.filename,
       })),
-      fonts: data.fonts.map((font) => ({
+      fonts: fonts.map((font) => ({
         file: createAttachmentUrl(BASE_URL, font.url),
       })),
     };

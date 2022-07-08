@@ -8,12 +8,16 @@ export interface FileStatus {
   name: string;
   converted: boolean;
   progress?: number;
+  thumbnail?: string;
+  error?: boolean;
 }
 
 export interface RemoteStatus {
   id?: string | number;
   progress?: number;
   fileId: string | number;
+  downloaded: boolean;
+  error: boolean;
 }
 
 export default class VideoHosting {

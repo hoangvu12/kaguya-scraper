@@ -50,6 +50,8 @@ const videoSourceController = async (
       subtitles,
     });
   } catch (err) {
+    console.log(err);
+
     next(err);
   }
 };

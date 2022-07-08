@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import Api500Error from '../errors/api500Error';
-import { getHosting } from '../hostings';
+import { getVideoHosting } from '../hostings';
 
 const videoRemoteStatusController = async (
   req: Request,
@@ -10,7 +10,7 @@ const videoRemoteStatusController = async (
   try {
     const { remoteId, hostingId } = req.params;
 
-    const hosting = getHosting(hostingId);
+    const hosting = getVideoHosting(hostingId);
 
     const remote = await hosting.getRemoteStatus(remoteId);
 

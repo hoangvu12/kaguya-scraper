@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import Api500Error from '../errors/api500Error';
-import { getHosting } from '../hostings';
+import { getVideoHosting } from '../hostings';
 
 const videoUploadController = async (
   req: Request,
@@ -12,7 +12,7 @@ const videoUploadController = async (
     const { fileName } = req.body;
     const { hostingId } = req.params;
 
-    const hosting = getHosting(hostingId);
+    const hosting = getVideoHosting(hostingId);
 
     const willUploadVideo = Array.isArray(file) ? file[0] : file;
 

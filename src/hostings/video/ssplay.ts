@@ -1,8 +1,11 @@
 import axios, { AxiosInstance } from 'axios';
 import { load } from 'cheerio';
-import { VideoSource } from '../core/AnimeScraper';
-import VideoHosting, { FileStatus, RemoteStatus } from '../core/VideoHosting';
-import { convertSizeToBytes, parseBetween } from '../utils';
+import { VideoSource } from '../../core/AnimeScraper';
+import VideoHosting, {
+  FileStatus,
+  RemoteStatus,
+} from '../../core/VideoHosting';
+import { convertSizeToBytes, parseBetween } from '../../utils';
 
 export default class SSPlayHosting extends VideoHosting {
   client: AxiosInstance;
@@ -75,6 +78,7 @@ export default class SSPlayHosting extends VideoHosting {
       name: fileName,
       progress,
       size: fileSize,
+      error: status === 'Error',
     };
   }
 
@@ -123,10 +127,14 @@ export default class SSPlayHosting extends VideoHosting {
     return {
       fileId: remoteId,
       progress: data.progress,
+      downloaded: data.converted,
+      error: data.error,
     };
   }
 
   async getStreamingUrl(fileId: string): Promise<VideoSource[]> {
+    console.log(fileId);
+
     try {
       const { data } = await axios.get(`https://ssplay.net/v/${fileId}.html`);
 

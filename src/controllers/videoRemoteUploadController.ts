@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
+import { decode } from 'he';
 import Api500Error from '../errors/api500Error';
-import { getHosting } from '../hostings';
+import { getVideoHosting } from '../hostings';
 
 type Body = {
   file: string;
@@ -16,9 +17,11 @@ const videoRemoteUploadController = async (
     const { file, filename } = req.body as Body;
     const { hostingId } = req.params;
 
-    const hosting = getHosting(hostingId);
+    const hosting = getVideoHosting(hostingId);
 
-    const remoteId = await hosting.uploadRemoteFile(file, filename);
+    const url = decode(decodeURIComponent(file));
+
+    const remoteId = await hosting.uploadRemoteFile(url, filename);
 
     if (!remoteId) throw new Api500Error('Video uploaded failed');
 
