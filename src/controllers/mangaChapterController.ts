@@ -46,7 +46,7 @@ const mangaChapterController = async (
 
     const { data: insertedChapter, error: chapterError } = await supabase
       .from('kaguya_chapters')
-      .upsert({ ...chapterConnection, userId: user.id })
+      .upsert({ ...chapterConnection, userId: user.id, published: false })
       .single();
 
     if (chapterError) {

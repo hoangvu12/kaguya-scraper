@@ -46,7 +46,7 @@ const animeEpisodeController = async (
 
     const { data: insertedEpisode, error: episodeError } = await supabase
       .from('kaguya_episodes')
-      .upsert({ ...episodeConnection, userId: user.id })
+      .upsert({ ...episodeConnection, userId: user.id, published: false })
       .single();
 
     if (episodeError) {
