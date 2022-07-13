@@ -8,7 +8,7 @@ import supabase from '../lib/supabase';
 import logger from '../logger';
 import { SourceAnime, SourceManga } from '../types/data';
 import { RequireAtLeastOne } from '../types/utils';
-import { isValidUrl, isVietnamese } from '../utils';
+import { isHTML, isValidUrl, isVietnamese } from '../utils';
 
 export interface Proxy {
   ignoreReqHeaders?: boolean;
@@ -72,6 +72,7 @@ export default class Scraper {
     const axiosErrorLogger = (error: AxiosError) => {
       return errorLogger(error, {
         logger: logger.error.bind(logger),
+        data: !isHTML(error?.response?.data),
       });
     };
 

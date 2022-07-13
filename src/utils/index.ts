@@ -322,3 +322,7 @@ export const handleProxy = <T extends VideoSource | ImageSource>(
   // @ts-ignore
   return sourcesWithProxy;
 };
+
+export const isHTML = (str: string) => {
+  return /<[a-z][\s\S]*>/i.test(str);
+};
