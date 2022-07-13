@@ -1,20 +1,19 @@
-export type Episode = {
+export type MediaUnit = {
   name: string;
   sourceId: string;
-  sourceEpisodeId: string;
   sourceMediaId: string;
   slug: string;
   sourceConnectionId: string;
+  published?: boolean;
 };
 
-export type Chapter = {
-  name: string;
-  sourceId: string;
+export interface Episode extends MediaUnit {
+  sourceEpisodeId: string;
+}
+
+export interface Chapter extends MediaUnit {
   sourceChapterId: string;
-  sourceMediaId: string;
-  slug: string;
-  sourceConnectionId: string;
-};
+}
 
 export interface SourceEpisode {
   name: string;
@@ -65,5 +64,3 @@ export interface Manga {
   chapters: Chapter[];
   sourceMangaConnection: SourceMediaConnection;
 }
-
-export type MediaUnit = Episode | Chapter | SourceEpisode | SourceChapter;
