@@ -31,6 +31,7 @@ export default (program: Command) => {
           {
             id: hosting.id,
             name: hosting.name,
+            supportedUrlFormats: hosting.supportedUrlFormats,
           },
           { returning: 'minimal' },
         );
