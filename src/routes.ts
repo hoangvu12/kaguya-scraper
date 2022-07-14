@@ -9,7 +9,6 @@ import videoRemoteStatusController from './controllers/videoRemoteStatusControll
 import videoRemoteUploadController from './controllers/videoRemoteUploadController';
 import videoSourceController from './controllers/videoSourceController';
 import videoStatusController from './controllers/videoStatusController';
-import videoUploadController from './controllers/videoUploadController';
 
 import auth from './middlewares/auth';
 import checkUploadPermission from './middlewares/checkUploadPermission';
@@ -24,7 +23,6 @@ import { uploadEpisodeValidation } from './validations/uploadEpisodeValidation';
 import { videoRemoteStatusValidation } from './validations/videoRemoteStatusValidation';
 import { videoRemoteUploadValidation } from './validations/videoRemoteUploadValidation';
 import { videoStatusValidation } from './validations/videoStatusValidation';
-import { videoUploadValidation } from './validations/videoUploadValidation';
 
 const cache = apicache.middleware;
 
@@ -39,14 +37,6 @@ router.get('/', (_, res) => {
 
 router.get('/images', successCache('1 day'), imageSourceController);
 router.get('/source', successCache('30 minutes'), videoSourceController);
-
-router.post(
-  '/upload/video/:hostingId',
-  validate(videoUploadValidation),
-  auth,
-  checkUploadPermission,
-  videoUploadController,
-);
 
 router.get(
   '/upload/video/:hostingId/:fileId/status',

@@ -1,6 +1,4 @@
 import axios, { AxiosInstance } from 'axios';
-import { UploadedFile } from 'express-fileupload';
-import FormData from 'form-data';
 import { VideoSource } from '../../core/AnimeScraper';
 import VideoHosting, {
   FileStatus,
@@ -100,34 +98,6 @@ export default class StreamtapeHosting extends VideoHosting {
         key: process.env.STREAMTAPE_API_KEY,
       },
     });
-  }
-
-  async uploadFile(file: UploadedFile): Promise<string | number> {
-    const form = new FormData();
-
-    form.append('file', file.data, file.name);
-
-    const { data } = await this.client.get<CreateUploadResponse>('/file/ul');
-
-    const uploadUrl = data?.result?.url;
-
-    if (!uploadUrl) throw new Error('No upload url');
-
-    const { data: response } = await axios.post<UploadResponse>(
-      uploadUrl,
-      form,
-      {
-        headers: {
-          Accept: '*/*',
-          'Content-Length': form.getLengthSync(),
-          ...form.getHeaders(),
-        },
-      },
-    );
-
-    if (!response?.result?.id) throw new Error('No upload result');
-
-    return response.result.id;
   }
 
   async getFileStatus(fileId: string): Promise<FileStatus> {

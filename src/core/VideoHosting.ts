@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { UploadedFile } from 'express-fileupload';
 import { VideoSource } from './AnimeScraper';
 
 export interface FileStatus {
@@ -27,10 +26,6 @@ export default class VideoHosting {
   constructor(id: string, name: string) {
     this.id = id;
     this.name = name;
-  }
-
-  async uploadFile(_file: UploadedFile): Promise<string | number> {
-    throw new Error('Method not implemented.');
   }
 
   async uploadRemoteFile(

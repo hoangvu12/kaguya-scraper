@@ -47,10 +47,6 @@ export default class SSPlayHosting extends VideoHosting {
     return this.client;
   }
 
-  async uploadFile(): Promise<string | number> {
-    throw new Error('Upload by file not supported');
-  }
-
   async getFileStatus(fileId: string): Promise<FileStatus> {
     const client = await this.getClient();
 
