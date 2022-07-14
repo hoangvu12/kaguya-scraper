@@ -22,10 +22,13 @@ export interface RemoteStatus {
 export default class VideoHosting {
   id: string;
   name: string;
+  supportedUrlFormats: string[];
 
   constructor(id: string, name: string) {
     this.id = id;
     this.name = name;
+
+    this.supportedUrlFormats = ['https://example.com/file.mp4'];
   }
 
   async uploadRemoteFile(
