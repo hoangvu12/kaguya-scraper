@@ -2,9 +2,8 @@ import cors from 'cors';
 import express from 'express';
 import fileUpload from 'express-fileupload';
 import { Worker } from 'worker_threads';
-import fetchCron from './cron/fetch';
+
 import { logError, returnError } from './errors/errorHandler';
-import { Client } from './lib/Discord';
 import routes from './routes';
 import { handlePath } from './utils';
 
@@ -12,29 +11,33 @@ const app = express();
 
 const PORT = process.env.PORT || 3001;
 
-app.use(fileUpload());
-app.use(cors());
-app.use(express.urlencoded({ extended: true }));
-
-Client.on('ready', (bot) => {
-  console.log(`Bot ${bot.user.tag} is ready!`);
-
-  fetchCron();
-});
-
+const worker = new Worker(handlePath('./crawl-worker'));
 const animeNotificationWorker = new Worker(
   handlePath('./anime-notification-worker'),
 );
 const notificationWorker = new Worker(handlePath('./notification-worker'));
 
+worker.on('message', console.log);
+worker.on('error', logError);
 animeNotificationWorker.on('message', console.log);
 animeNotificationWorker.on('error', logError);
 notificationWorker.on('message', console.log);
 notificationWorker.on('error', logError);
 
+app.use(
+  fileUpload({
+    limits: {
+      // 1 GB
+      fileSize: 1024 * 1024 * 1024,
+    },
+    abortOnLimit: true,
+  }),
+);
+app.use(cors());
+app.use(express.urlencoded({ extended: true }));
+
 process.on('uncaughtException', (error) => {
   logError(error);
-  logError(new Error('uncaughtException'));
 });
 
 app.enable('trust proxy');

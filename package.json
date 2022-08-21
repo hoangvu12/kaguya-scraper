@@ -66,6 +66,7 @@
     "commander": "^9.0.0",
     "cors": "^2.8.5",
     "cron": "^1.8.2",
+    "crypto-js": "^4.1.1",
     "dayjs": "^1.10.7",
     "discord-api-types": "^0.26.1",
     "discord.js": "^13.6.0",
