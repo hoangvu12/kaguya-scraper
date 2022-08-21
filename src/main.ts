@@ -1,10 +1,12 @@
 import cors from 'cors';
 import express from 'express';
 import fileUpload from 'express-fileupload';
+import { Worker } from 'worker_threads';
 import fetchCron from './cron/fetch';
 import { logError, returnError } from './errors/errorHandler';
 import { Client } from './lib/Discord';
 import routes from './routes';
+import { handlePath } from './utils';
 import { handleAnimeNotification } from './utils/notification';
 
 const app = express();
@@ -20,6 +22,11 @@ Client.on('ready', (bot) => {
 
   fetchCron();
 });
+
+const notificationWorker = new Worker(handlePath('./notification-worker'));
+
+notificationWorker.on('message', console.log);
+notificationWorker.on('error', logError);
 
 handleAnimeNotification();
 
