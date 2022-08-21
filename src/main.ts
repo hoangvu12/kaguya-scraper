@@ -7,7 +7,6 @@ import { logError, returnError } from './errors/errorHandler';
 import { Client } from './lib/Discord';
 import routes from './routes';
 import { handlePath } from './utils';
-import { handleAnimeNotification } from './utils/notification';
 
 const app = express();
 
@@ -23,12 +22,15 @@ Client.on('ready', (bot) => {
   fetchCron();
 });
 
+const animeNotificationWorker = new Worker(
+  handlePath('./anime-notification-worker'),
+);
 const notificationWorker = new Worker(handlePath('./notification-worker'));
 
+animeNotificationWorker.on('message', console.log);
+animeNotificationWorker.on('error', logError);
 notificationWorker.on('message', console.log);
 notificationWorker.on('error', logError);
-
-handleAnimeNotification();
 
 process.on('uncaughtException', (error) => {
   logError(error);
