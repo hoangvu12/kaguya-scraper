@@ -1,5 +1,4 @@
 import axios from 'axios';
-import dayjs from 'dayjs';
 import { PushSubscription } from 'web-push';
 import { getlatestMediaUnit, removeArrayOfObjectDup } from '.';
 import supabase from '../lib/supabase';
@@ -8,8 +7,10 @@ import logger from '../logger';
 import { AiringSchedule, Media, MediaType, Page } from '../types/anilist';
 import { Chapter } from '../types/data';
 import nodeSchedule from 'node-schedule';
+import dayjs from '../lib/dayjs';
+import uniqBy from 'lodash/uniqBy';
 
-type Subscription = {
+export type Subscription = {
   userAgent: string;
   userId: string;
   subscription: PushSubscription;
@@ -29,34 +30,40 @@ interface MediaWithChapters extends Omit<Media, 'chapters'> {
   chapters: Chapter[];
 }
 
-const notificationQuery = (page = 1) => {
-  const startTimeOfADay = dayjs().startOf('day').unix();
-  const endTimeOfADay = dayjs().endOf('day').unix();
-
-  return `
-    {
-      Page(page: ${page}, perPage: 50) {
-        airingSchedules(airingAt_lesser: ${endTimeOfADay}, airingAt_greater: ${startTimeOfADay}, notYetAired: true) {
-          airingAt
-          episode
-          media {
-            id
-            title {
-              userPreferred
-            }
-            coverImage {
-              extraLarge
-            }
-            bannerImage
-          }
+const notificationQuery = `
+query AiringSchedule($page: Int = 1, $perPage: Int = 20, $id: Int, $mediaId: Int, $episode: Int, $airingAt: Int, $notYetAired: Boolean, $id_not: Int, $id_in: [Int], $id_not_in: [Int], $mediaId_not: Int, $mediaId_in: [Int], $mediaId_not_in: [Int], $episode_not: Int, $episode_in: [Int], $episode_not_in: [Int], $episode_greater: Int, $episode_lesser: Int, $airingAt_greater: Int, $airingAt_lesser: Int, $sort: [AiringSort]) {
+  Page(page: $page, perPage: $perPage) {
+    pageInfo {
+      total
+      perPage
+      currentPage
+      lastPage
+      hasNextPage
+    }
+    airingSchedules(id: $id, mediaId: $mediaId, episode: $episode, airingAt: $airingAt, notYetAired: $notYetAired, id_not: $id_not, id_in: $id_in, id_not_in: $id_not_in, mediaId_not: $mediaId_not, mediaId_in: $mediaId_in, mediaId_not_in: $mediaId_not_in, episode_not: $episode_not, episode_in: $episode_in, episode_not_in: $episode_not_in, episode_greater: $episode_greater, episode_lesser: $episode_lesser, airingAt_greater: $airingAt_greater, airingAt_lesser: $airingAt_lesser, sort: $sort) {
+      airingAt
+      episode
+      mediaId
+      media {
+        type
+        id
+        title {
+          userPreferred
         }
-        pageInfo {
-          hasNextPage
+        coverImage {
+          extraLarge
+          large
+          color
         }
+        genres
+        favourites
+        averageScore
       }
     }
-  `;
-};
+  }
+}
+
+`;
 
 export const getSubscribers = async (type: MediaType, sourceIds: number[]) => {
   const isAnime = MediaType.Anime === type;
@@ -85,9 +92,19 @@ export const getTodayAiringSchedules = async (): Promise<AiringSchedule[]> => {
 
   let page = 1;
 
+  const startTimeOfADay = dayjs().utcOffset(0).startOf('day').unix();
+  const endTimeOfADay = dayjs().utcOffset(0).endOf('day').unix();
+
   const fetch = async () => {
     const body = {
-      query: notificationQuery(page),
+      query: notificationQuery,
+      variables: {
+        airingAt_greater: startTimeOfADay,
+        airingAt_lesser: endTimeOfADay,
+        perPage: 50,
+        notYetAired: true,
+        page,
+      },
     };
 
     const { data } = await axios.post<{ data: { Page: Page } }>(
@@ -110,14 +127,14 @@ export const getTodayAiringSchedules = async (): Promise<AiringSchedule[]> => {
   return removeArrayOfObjectDup(list, 'mediaId');
 };
 
-const sendNotification = async (
+export const sendNotification = async (
   userSubscription: Subscription,
   data: string,
 ) => {
   const { subscription, userAgent, userId } = userSubscription;
 
   try {
-    await webPush.sendNotification(subscription, data);
+    return webPush.sendNotification(subscription, data);
   } catch (err) {
     logger.error(err.message);
 
@@ -163,15 +180,18 @@ export const handleAnimeNotification = async () => {
       },
     });
 
-    for (const subscriber of subscribers) {
-      for (const userSubscription of subscriber.subscriptions) {
-        const job = nodeSchedule.scheduleJob(airingDate, async () => {
+    const job = nodeSchedule.scheduleJob(airingDate, async () => {
+      for (const subscriber of subscribers) {
+        for (const userSubscription of uniqBy(
+          subscriber.subscriptions,
+          'userAgent',
+        )) {
           await sendNotification(userSubscription, data);
-
-          job.cancel();
-        });
+        }
       }
-    }
+
+      job.cancel();
+    });
   }
 };
 
