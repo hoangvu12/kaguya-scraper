@@ -31,6 +31,7 @@ export type AnimeSource = {
   sources: VideoSource[];
   subtitles?: Subtitle[];
   fonts?: Font[];
+  thumbnail?: string;
 };
 
 export type GetSourcesQuery = {

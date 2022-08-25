@@ -31,7 +31,7 @@ const videoSourceController = async (
       scraper = getAnimeClassScraper('custom');
     }
 
-    const { sources, subtitles, fonts } = await scraper.getSources({
+    const { sources, ...data } = await scraper.getSources({
       source_id: source_id.toString(),
       source_media_id: source_media_id.toString(),
       episode_id: episode_id.toString(),
@@ -47,8 +47,7 @@ const videoSourceController = async (
     res.status(200).json({
       success: true,
       sources: sourcesWithProxy,
-      subtitles,
-      fonts,
+      ...data,
     });
   } catch (err) {
     console.log(err);
