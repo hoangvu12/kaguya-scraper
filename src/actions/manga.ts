@@ -18,6 +18,7 @@ export const mangaChaptersAction = createAction<Manga, Chapter>({
     'sourceId',
     'sourceMediaId',
     'slug',
+    'section',
   ],
   table: 'chapters',
   transform: (data) => data.flatMap((manga) => manga.chapters),

@@ -9,6 +9,7 @@ export const animeEpisodesAction = createAction<Anime, Episode>({
     'sourceId',
     'sourceMediaId',
     'slug',
+    'section',
   ],
   table: 'episodes',
   transform: (data) => data.flatMap((anime) => anime.episodes),

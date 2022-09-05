@@ -91,13 +91,19 @@ export const scrapeNewAnime = async (scraperId: AnimeScraperId) => {
       (connection) => connection.episodes,
     );
 
-    const sourceEpisodes = sourceAnime
-      .filter((anime) =>
-        existEpisodes.some(
-          (episode) => episode.sourceMediaId === anime.sourceMediaId,
-        ),
-      )
-      .flatMap((anime) => anime.episodes);
+    const sourceEpisodes = uniqWith(
+      sourceAnime
+        .filter((anime) =>
+          existEpisodes.some(
+            (episode) => episode.sourceMediaId === anime.sourceMediaId,
+          ),
+        )
+        .flatMap((anime) => anime.episodes),
+      (a, b) =>
+        a.name === b.name &&
+        a.sourceMediaId === b.sourceMediaId &&
+        a.section === b.section,
+    );
 
     const newEpisodes: Episode[] = sourceEpisodes
       .filter(

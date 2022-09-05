@@ -93,13 +93,19 @@ export const scrapeNewManga = async (scraperId: MangaScraperId) => {
       (connection) => connection.chapters,
     );
 
-    const sourceChapters = sourceManga
-      .filter((manga) =>
-        existChapters.some(
-          (chapter) => chapter.sourceMediaId === manga.sourceMediaId,
-        ),
-      )
-      .flatMap((manga) => manga.chapters);
+    const sourceChapters = uniqWith(
+      sourceManga
+        .filter((manga) =>
+          existChapters.some(
+            (chapter) => chapter.sourceMediaId === manga.sourceMediaId,
+          ),
+        )
+        .flatMap((manga) => manga.chapters),
+      (a, b) =>
+        a.name === b.name &&
+        a.sourceMediaId === b.sourceMediaId &&
+        a.section === b.section,
+    );
 
     const newChapters: Chapter[] = sourceChapters
       .filter(

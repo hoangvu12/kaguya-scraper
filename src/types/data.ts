@@ -5,6 +5,7 @@ export type MediaUnit = {
   slug: string;
   sourceConnectionId: string;
   published?: boolean;
+  section?: string;
 };
 
 export interface Episode extends MediaUnit {
@@ -19,6 +20,7 @@ export interface SourceEpisode {
   name: string;
   sourceEpisodeId: string;
   sourceMediaId: string;
+  section?: string;
 }
 export interface SourceAnime {
   titles: string[];
@@ -31,6 +33,7 @@ export interface SourceChapter {
   name: string;
   sourceChapterId: string;
   sourceMediaId: string;
+  section?: string;
 }
 export interface SourceManga {
   titles: string[];
