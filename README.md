@@ -63,7 +63,7 @@ You can create a source in `src/scrapers/(anime|manga)`.
 
 Or you can just run `npm run cli generate`. It will generate a source for you based on the answer you give it
 
-Or you can look at examples at `src/scrapers/anime/avs.ts` and `src/scrapers/manga/nt.ts`. These are two sources that I personally made for currently running [Kaguya](https://github.com/hoangvu12/Kaguya)
+Or you can look at examples at `src/scrapers/anime/gogo.ts` and `src/scrapers/manga/nt.ts`. These are two sources that I personally made for currently running [Kaguya](https://github.com/hoangvu12/Kaguya)
 
 ### Initialize source.
 
