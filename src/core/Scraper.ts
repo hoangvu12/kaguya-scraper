@@ -41,6 +41,7 @@ export default class Scraper {
   disableMonitor: boolean;
   proxy: Proxy;
   locales: string[];
+  scrapingPages: number;
 
   constructor(
     id: string,
@@ -66,6 +67,7 @@ export default class Scraper {
     this.id = id;
     this.name = name;
     this.blacklistTitles = ['live action'];
+    this.scrapingPages = 2;
 
     axiosRetry(this.client, { retries: 3 });
 

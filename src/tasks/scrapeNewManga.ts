@@ -63,7 +63,7 @@ export const scrapeNewManga = async (scraperId: MangaScraperId) => {
   try {
     const scraper = getMangaScraper(scraperId);
 
-    const sourceManga = await scraper.scrapeMangaPages(3);
+    const sourceManga = await scraper.scrapeMangaPages(scraper.scrapingPages);
 
     const sourceMediaIds = uniq(sourceManga.map((data) => data.sourceMediaId));
 

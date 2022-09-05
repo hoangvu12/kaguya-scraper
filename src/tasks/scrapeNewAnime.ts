@@ -61,7 +61,7 @@ export const scrapeNewAnime = async (scraperId: AnimeScraperId) => {
   try {
     const scraper = getAnimeScraper(scraperId);
 
-    const sourceAnime = await scraper.scrapeAnimePages(3);
+    const sourceAnime = await scraper.scrapeAnimePages(scraper.scrapingPages);
 
     const sourceMediaIds = sourceAnime.map((data) => data.sourceMediaId);
 
