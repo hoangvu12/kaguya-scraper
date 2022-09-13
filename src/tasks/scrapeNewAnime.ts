@@ -23,6 +23,7 @@ const handleExistAnime = async (episodes: Episode[]) => {
       'sourceId',
       'sourceMediaId',
       'slug',
+      'section',
     ],
     table: 'episodes',
     uniqueKey: 'slug',

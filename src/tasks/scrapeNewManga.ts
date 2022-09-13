@@ -25,6 +25,7 @@ const handleExistManga = async (chapters: Chapter[]) => {
       'sourceId',
       'sourceMediaId',
       'slug',
+      'section',
     ],
     table: 'chapters',
     uniqueKey: 'slug',
