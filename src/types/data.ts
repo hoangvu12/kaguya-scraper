@@ -1,3 +1,5 @@
+import { MediaArgs } from './anilist';
+
 export type MediaUnit = {
   name: string;
   sourceId: string;
@@ -28,6 +30,7 @@ export interface SourceAnime {
   sourceId: string;
   sourceMediaId: string;
   anilistId?: number;
+  metadata?: MediaArgs;
 }
 export interface SourceChapter {
   name: string;
@@ -41,6 +44,7 @@ export interface SourceManga {
   sourceId: string;
   sourceMediaId: string;
   anilistId?: number;
+  metadata?: MediaArgs;
 }
 
 export interface SourceMediaConnection {

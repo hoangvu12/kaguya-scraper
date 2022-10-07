@@ -1,8 +1,8 @@
 import axios from 'axios';
 import axiosRateLimit from 'axios-rate-limit';
 import axiosRetry from 'axios-retry';
-import { findBestMatch, sleep } from '.';
-import { Media, MediaType, Page } from '../types/anilist';
+import { sleep } from '.';
+import { Media, MediaArgs, MediaType, Page } from '../types/anilist';
 
 const idQuery = `
 query ($id: Int, $search: String, $type: MediaType) {
@@ -263,7 +263,11 @@ client.interceptors.request.use(async (config) => {
   return config;
 });
 
-export const getMediaList = async (ids: number[], type: MediaType) => {
+export const getMediaList = async (
+  ids: number[],
+  type: MediaType,
+  args: MediaArgs = {},
+) => {
   let list: Media[] = [];
   let page = 1;
 
@@ -275,6 +279,7 @@ export const getMediaList = async (ids: number[], type: MediaType) => {
           type,
           id_in: ids,
           page,
+          ...args,
         },
       };
 
@@ -301,6 +306,7 @@ export const getMediaList = async (ids: number[], type: MediaType) => {
 export const getIdByTitle = async <T extends MediaType>(
   title: string,
   type: T,
+  args: MediaArgs = {},
 ) => {
   const body = {
     query: idQuery,
@@ -308,6 +314,7 @@ export const getIdByTitle = async <T extends MediaType>(
       type,
       sort: 'SEARCH_MATCH',
       search: title,
+      ...args,
     },
   };
 
@@ -318,28 +325,17 @@ export const getIdByTitle = async <T extends MediaType>(
 
     const media = data.Media;
 
-    const { bestMatch } = findBestMatch(title, [
-      ...Object.values(media.title),
-      ...media.synonyms,
-    ]);
-
-    if (bestMatch.rating < 0.6) {
-      console.log('Success but not exact', title);
-
-      return null;
-    }
-
     console.log('Success', title);
 
     return media?.id;
   } catch (err) {
-    console.log(err, title);
+    console.log(err.message, title);
   }
 };
 
 type Body = {
   query: string;
-  variables: {
+  variables?: {
     type: MediaType;
   };
 };
@@ -348,7 +344,7 @@ interface AnilistResponse<T> {
   data: T;
 }
 
-const fetch = async <T>(body: Body) => {
+export const fetch = async <T>(body: Body) => {
   const { data } = await client.post<AnilistResponse<T>>(
     'https://graphql.anilist.co/',
     body,
@@ -363,9 +359,10 @@ const fetch = async <T>(body: Body) => {
 export const getRetriesId = async <T extends MediaType>(
   titles: string[],
   type: T,
+  args: MediaArgs = {},
 ) => {
   for (const title of titles) {
-    const data = await getIdByTitle(title, type);
+    const data = await getIdByTitle(title, type, args);
 
     if (data) return data;
   }

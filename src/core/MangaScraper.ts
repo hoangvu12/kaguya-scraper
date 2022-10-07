@@ -72,7 +72,11 @@ export default class MangaScraper extends Scraper {
       if (source.anilistId) {
         anilistId = source.anilistId;
       } else {
-        anilistId = await getRetriesId(source.titles, MediaType.Manga);
+        anilistId = await getRetriesId(
+          source.titles,
+          MediaType.Manga,
+          source.metadata,
+        );
       }
 
       if (!anilistId) continue;
