@@ -11,9 +11,6 @@ export default class Monitor {
   onRequest: () => Promise<any>;
   shouldChange: (oldData?: any, newData?: any) => Promise<boolean>;
 
-  // It should run on second interval
-  isRunnable: boolean;
-
   // Save old data to compare with new data
   oldData: any;
 
@@ -27,7 +24,6 @@ export default class Monitor {
     this.isDisabled = false;
     this.isRequestDisabled = false;
     this.interval = DEFAULT_MONITOR_INTERVAL;
-    this.isRunnable = false;
   }
 
   // Will override this function
@@ -38,28 +34,24 @@ export default class Monitor {
   run() {
     if (this.isDisabled) return;
 
-    setInterval(async () => {
-      if (!this.isRunnable) {
-        this.isRunnable = true;
+    setInterval(this.check, this.interval);
+  }
 
-        return;
-      }
+  async check() {
+    if (this.isRequestDisabled) {
+      this.onMonitorChange();
 
-      if (this.isRequestDisabled) {
-        this.onMonitorChange();
+      return;
+    }
 
-        return;
-      }
+    const data = await this.onRequest();
 
-      const data = await this.onRequest();
+    const shouldChange = await this.shouldChange(this.oldData, data);
 
-      const shouldChange = await this.shouldChange(this.oldData, data);
+    if (shouldChange) {
+      this.onMonitorChange();
+    }
 
-      if (shouldChange) {
-        this.onMonitorChange();
-      }
-
-      this.oldData = data;
-    }, this.interval);
+    this.oldData = data;
   }
 }
