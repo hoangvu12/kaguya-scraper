@@ -60,6 +60,6 @@ export default class Monitor {
       }
 
       this.oldData = data;
-    }, 30000);
+    }, this.interval);
   }
 }
