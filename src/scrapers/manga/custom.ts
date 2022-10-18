@@ -15,7 +15,7 @@ export default class MangaCustomScraper extends MangaScraper {
   constructor() {
     super('custom', 'Custom', { baseURL: '' });
 
-    this.disableMonitor = true;
+    this.monitor.isDisabled = true;
   }
 
   async getImages(query: GetImagesQuery): Promise<ImageSource[]> {

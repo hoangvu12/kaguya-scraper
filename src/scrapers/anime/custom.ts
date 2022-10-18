@@ -21,7 +21,7 @@ export default class AnimeCustomScraper extends AnimeScraper {
   constructor() {
     super('custom', 'Custom', { baseURL: '' });
 
-    this.disableMonitor = true;
+    this.monitor.isDisabled = true;
   }
 
   async getSources(query: GetSourcesQuery): Promise<AnimeSource> {

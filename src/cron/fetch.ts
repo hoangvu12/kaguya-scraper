@@ -5,7 +5,6 @@ import scrapers, { AnimeScraperId, MangaScraperId } from '../scrapers';
 import { scrapeNewAnime } from '../tasks/scrapeNewAnime';
 import { scrapeNewManga } from '../tasks/scrapeNewManga';
 import { MediaType } from '../types/anilist';
-import { monitorPageChange, MonitorPageOptions } from '../utils';
 
 type Scraper<T> = T extends MediaType.Anime ? AnimeScraper : MangaScraper;
 
@@ -23,21 +22,11 @@ const handleFetch = async <T extends MediaType>(
 const handleRegisterMonitor = <T extends MediaType>(
   type: T,
   scraper: Scraper<T>,
-  options?: MonitorPageOptions,
 ) => {
-  const defaultOptions = {
-    shouldChange: scraper.shouldMonitorChange,
-    interval: scraper.monitorInterval,
-    axiosOptions: scraper.monitorAxiosConfig,
-    disableRequest: scraper.disableMonitorRequest,
-  };
+  scraper.monitor.onMonitorChange = () =>
+    handleFetch(type, scraper).catch(logger.error);
 
-  const monitor = monitorPageChange(scraper.monitorURL, {
-    ...defaultOptions,
-    ...options,
-  });
-
-  monitor(() => handleFetch(type, scraper).catch(logger.error));
+  scraper.monitor.run();
 };
 
 export const handleFetchData = async <T extends MediaType>(type: T) => {
@@ -66,15 +55,11 @@ export default async () => {
   for (const scraperId in animeScrapers) {
     const scraper = animeScrapers[scraperId];
 
-    if (scraper.disableMonitor) continue;
-
     handleRegisterMonitor(MediaType.Anime, scraper);
   }
 
   for (const scraperId in mangaScrapers) {
     const scraper = mangaScrapers[scraperId];
-
-    if (scraper.disableMonitor) continue;
 
     handleRegisterMonitor(MediaType.Manga, scraper);
   }

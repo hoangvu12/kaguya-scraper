@@ -19,22 +19,14 @@ export default class AnimeGOGOScraper extends AnimeScraper {
     // See more: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
     this.locales = ['en'];
     this.blacklistTitles = ['live action', 'dub'];
-    this.monitorURL =
-      'https://ajax.gogo-load.com/ajax/page-recent-release.html?page=1&type=1';
-  }
 
-  async statusCheck(): Promise<boolean> {
-    const response = await axios.get(
-      `${BASE_AJAX_URL}/page-recent-release.html`,
-      {
-        params: {
-          page: 1,
-          type: 1,
-        },
-      },
-    );
+    this.monitor.onRequest = async () => {
+      const { data } = await axios.get(
+        `${BASE_AJAX_URL}/page-recent-release.html?page=1&type=1`,
+      );
 
-    return response.status === 200;
+      return data;
+    };
   }
 
   shouldMonitorChange(oldPage: string, newPage: string): boolean {

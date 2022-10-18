@@ -9,6 +9,7 @@ import logger from '../logger';
 import { SourceAnime, SourceManga } from '../types/data';
 import { RequireAtLeastOne } from '../types/utils';
 import { isHTML, isValidUrl, isVietnamese } from '../utils';
+import Monitor from './Monitor';
 
 export interface Proxy {
   ignoreReqHeaders?: boolean;
@@ -25,23 +26,16 @@ interface Server {
   name: string;
 }
 
-export const DEFAULT_CONFIG: AxiosRequestConfig = {};
-
-export const DEFAULT_MONITOR_INTERVAL = 1_200_000; // 20 minutes
 export default class Scraper {
   client: AxiosInstance;
   id: string;
   name: string;
   baseURL: string;
   blacklistTitles: string[];
-  monitorURL: string;
-  monitorInterval: number;
-  monitorAxiosConfig: AxiosRequestConfig;
-  disableMonitorRequest: boolean;
-  disableMonitor: boolean;
   proxy: Proxy;
   locales: string[];
   scrapingPages: number;
+  monitor: Monitor;
 
   constructor(
     id: string,
@@ -57,13 +51,19 @@ export default class Scraper {
       ...axiosConfig,
     };
 
-    this.disableMonitor = false;
-    this.monitorAxiosConfig = config;
     this.client = axios.create(config);
     this.baseURL = axiosConfig.baseURL;
-    this.monitorURL = axiosConfig.baseURL;
-    this.monitorInterval = DEFAULT_MONITOR_INTERVAL;
-    this.disableMonitorRequest = false;
+
+    const defaultMonitorRequest = async () => {
+      const { data } = await this.client.get('/');
+
+      return data;
+    };
+
+    this.monitor = new Monitor(
+      defaultMonitorRequest,
+      this.shouldMonitorChange.bind(this),
+    );
     this.id = id;
     this.name = name;
     this.blacklistTitles = ['live action'];

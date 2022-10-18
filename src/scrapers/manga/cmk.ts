@@ -18,7 +18,17 @@ export default class MangaCMKScraper extends MangaScraper {
     // Languages that the source supports (Two letter code)
     // See more: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
     this.locales = ['en'];
-    this.monitorURL = 'https://api.comick.fun/chapter?lang=en&page=1&order=new';
+    this.monitor.onRequest = async () => {
+      const { data } = await this.client.get('/chapter', {
+        params: {
+          lang: 'en',
+          page: 1,
+          order: 'new',
+        },
+      });
+
+      return data;
+    };
   }
 
   async statusCheck(): Promise<boolean> {

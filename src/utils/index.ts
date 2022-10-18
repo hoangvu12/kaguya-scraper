@@ -1,4 +1,3 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import fs from 'fs';
 import pick from 'lodash/pick';
 import path from 'path';
@@ -61,61 +60,6 @@ export const parseBetween = (str: string, start: string, end: string) => {
   strArr = strArr[1].split(end);
 
   return strArr[0];
-};
-
-export type MonitorPageOptions = {
-  shouldChange: (...any: any) => boolean;
-  interval?: number;
-  axiosOptions?: AxiosRequestConfig;
-  client?: AxiosInstance;
-  disableRequest?: boolean;
-};
-
-type MonitorOnChange = (data?: any) => any;
-
-export const monitorPageChange = (url: string, options: MonitorPageOptions) => {
-  let oldPage = null;
-  let loadedOnce = false;
-
-  const {
-    shouldChange,
-    interval = 10000,
-    axiosOptions = {},
-    client = axios,
-    disableRequest = false,
-  } = options;
-
-  return (onChange: MonitorOnChange) => {
-    const checkPage = async () => {
-      if (disableRequest) {
-        if (loadedOnce) {
-          onChange();
-        }
-
-        loadedOnce = true;
-        return;
-      }
-
-      const { data } = await client.get(url, axiosOptions);
-
-      if (!data) return;
-
-      if (shouldChange(oldPage, data)) {
-        onChange(data);
-      }
-
-      oldPage = data;
-      loadedOnce = true;
-    };
-
-    const checkInterval = setInterval(checkPage, interval);
-
-    checkPage();
-
-    return () => {
-      clearInterval(checkInterval);
-    };
-  };
 };
 
 export const parseNumbersFromString = (text: string, fallbackNumber = null) => {
