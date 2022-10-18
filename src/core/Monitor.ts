@@ -34,7 +34,7 @@ export default class Monitor {
   run() {
     if (this.isDisabled) return;
 
-    setInterval(this.check, this.interval);
+    setInterval(this.check.bind(this), this.interval);
   }
 
   async check() {
