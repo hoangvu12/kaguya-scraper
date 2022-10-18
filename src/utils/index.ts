@@ -62,7 +62,7 @@ export const parseBetween = (str: string, start: string, end: string) => {
   return strArr[0];
 };
 
-export const parseNumbersFromString = (text: string, fallbackNumber = null) => {
+export const parseNumberFromString = (text: string, fallbackNumber = null) => {
   const matches = text.match(/\d+([.,][\d{1,2}])?/g);
 
   if (!matches) return fallbackNumber;
@@ -72,9 +72,7 @@ export const parseNumbersFromString = (text: string, fallbackNumber = null) => {
 
 export const getlatestMediaUnit = <T extends MediaUnit>(unit: T[]) => {
   return unit.sort((a, b) => {
-    return (
-      parseNumbersFromString(b.name, 0) - parseNumbersFromString(a.name, 0)
-    );
+    return parseNumberFromString(b.name, 0) - parseNumberFromString(a.name, 0);
   })[0];
 };
 
