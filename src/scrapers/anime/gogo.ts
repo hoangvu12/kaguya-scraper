@@ -8,7 +8,7 @@ import gogoExtractor from '../../extractors/gogoplay';
 import { SourceAnime, SourceEpisode } from '../../types/data';
 import { fulfilledPromises } from '../../utils';
 
-const BASE_URL = 'https://gogoanime.sk';
+const BASE_URL = 'https://gogoanime.dk';
 const BASE_AJAX_URL = 'https://ajax.gogo-load.com/ajax';
 
 export default class AnimeGOGOScraper extends AnimeScraper {
@@ -18,7 +18,6 @@ export default class AnimeGOGOScraper extends AnimeScraper {
     // Languages that the source supports (Two letter code)
     // See more: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
     this.locales = ['en'];
-    this.blacklistTitles = ['live action', 'dub'];
 
     this.monitor.onRequest = async () => {
       const { data } = await axios.get(
@@ -45,7 +44,7 @@ export default class AnimeGOGOScraper extends AnimeScraper {
   }
 
   async scrapeAnimePage(page: number): Promise<SourceAnime[]> {
-    const { data } = await axios.get(
+    const { data: subData } = await axios.get(
       `${BASE_AJAX_URL}/page-recent-release.html`,
       {
         params: {
@@ -55,27 +54,58 @@ export default class AnimeGOGOScraper extends AnimeScraper {
       },
     );
 
-    const $ = load(data);
-
-    return fulfilledPromises<Promise<SourceAnime>>(
-      $('.items li')
-        .toArray()
-        .map(async (el) => {
-          const href = $(el).find('a').attr('href') as string;
-
-          // /honzuki-no-gekokujou-shisho-ni-naru-tame-ni-wa-shudan-wo-erandeiraremasen-3rd-season-episode-4
-          const [sourceMediaId] = href.replace('/', '').split('-episode');
-          const episodes = await this.getEpisodes(sourceMediaId);
-          const name = $(el).find('.name').text();
-
-          return {
-            titles: [name],
-            episodes,
-            sourceId: this.id,
-            sourceMediaId: sourceMediaId,
-          };
-        }),
+    const { data: dubData } = await axios.get(
+      `${BASE_AJAX_URL}/page-recent-release.html`,
+      {
+        params: {
+          page,
+          type: 2,
+        },
+      },
     );
+
+    const $sub = load(subData);
+    const $dub = load(dubData);
+
+    const subList = $sub('.items li')
+      .toArray()
+      .map(async (el) => {
+        const href = $sub(el).find('a').attr('href') as string;
+
+        // /honzuki-no-gekokujou-shisho-ni-naru-tame-ni-wa-shudan-wo-erandeiraremasen-3rd-season-episode-4
+        const [sourceMediaId] = href.replace('/', '').split('-episode');
+        const episodes = await this.getEpisodes(sourceMediaId);
+        const name = $sub(el).find('.name').text().replace('(Dub)', '').trim();
+
+        return {
+          titles: [name],
+          episodes,
+          sourceId: this.id,
+          sourceMediaId: sourceMediaId,
+        };
+      });
+
+    const dubList = $dub('.items li')
+      .toArray()
+      .map(async (el) => {
+        const href = $dub(el).find('a').attr('href') as string;
+
+        // /honzuki-no-gekokujou-shisho-ni-naru-tame-ni-wa-shudan-wo-erandeiraremasen-3rd-season-episode-4
+        const [sourceMediaId] = href.replace('/', '').split('-episode');
+        const episodes = await this.getEpisodes(sourceMediaId);
+        const name = $dub(el).find('.name').text().replace('(Dub)', '').trim();
+
+        return {
+          titles: [name],
+          episodes,
+          sourceId: this.id,
+          sourceMediaId: sourceMediaId,
+        };
+      });
+
+    const list = [...subList, ...dubList];
+
+    return fulfilledPromises<Promise<SourceAnime>>(list);
   }
 
   async getEpisodes(
@@ -85,6 +115,8 @@ export default class AnimeGOGOScraper extends AnimeScraper {
     if (!sourceId) {
       sourceId = await this.getAnimeId(sourceSlug);
     }
+
+    const isDub = sourceSlug.includes('dub');
 
     const { data } = await axios.get(`${BASE_AJAX_URL}/load-list-episode`, {
       params: {
@@ -110,6 +142,7 @@ export default class AnimeGOGOScraper extends AnimeScraper {
           name,
           sourceEpisodeId,
           sourceMediaId: sourceSlug,
+          section: isDub ? 'Dub' : 'Sub',
         };
       });
   }
